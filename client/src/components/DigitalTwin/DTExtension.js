@@ -43,10 +43,7 @@ const DTExtension = () => {
     return true;
   };
 
-  Autodesk.Viewing.theExtensionManager.registerExtension(
-    'DTExtension',
-    DTExtension
-  );
+  Autodesk.Viewing.theExtensionManager.registerExtension('DTExtension', DTExtension);
 
   const viewer = window.NOP_VIEWER;
   if (viewer) {

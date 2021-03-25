@@ -9,6 +9,7 @@ import DigitalTwin from './components/DigitalTwin/DigitalTwin';
 import Models from './components/Forge/Models/Models';
 import theme from './theme';
 import useStyles from './styles';
+import ForbiddenCity from './components/ForbiddenCity/ForbiddenCity';
 
 const App = () => {
   const classes = useStyles();
@@ -17,13 +18,14 @@ const App = () => {
       <GlobalStyles />
       <div className={classes.root}>
         <BrowserRouter>
-          <Container maxWidth={false}>
+          <Container maxWidth={false} className={classes.container}>
             <Navbar />
             <Switch>
               <Route path='/' exact component={Home} />
               <Route path='/auth' exact component={Auth} />
               <Route path='/models' exact component={Models} />
               <Route path='/IoT' exact component={DigitalTwin} />
+              <Route path='/forbiddenCity' exact component={ForbiddenCity} />
             </Switch>
           </Container>
         </BrowserRouter>

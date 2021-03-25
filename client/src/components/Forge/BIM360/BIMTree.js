@@ -63,13 +63,7 @@ const BIMTree = (props) => {
                     />
                   );
                 case 'items':
-                  return (
-                    <BIMTree
-                      key={node.id}
-                      {...node}
-                      icon={<InsertDriveFileIcon />}
-                    />
-                  );
+                  return <BIMTree key={node.id} {...node} icon={<InsertDriveFileIcon />} />;
                 case 'versions':
                   return (
                     <BIMTree
@@ -94,13 +88,7 @@ const BIMTree = (props) => {
                     />
                   );
                 case 'unsupported':
-                  return (
-                    <BIMTree
-                      key={node.id}
-                      {...node}
-                      icon={<RemoveCircleIcon />}
-                    />
-                  );
+                  return <BIMTree key={node.id} {...node} icon={<RemoveCircleIcon />} />;
                 default:
                   return <BIMTree key={node.id} {...node} />;
               }

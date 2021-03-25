@@ -12,6 +12,7 @@ import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import DomainIcon from '@material-ui/icons/Domain';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import SettingsIcon from '@material-ui/icons/Settings';
+import BlockIcon from '@material-ui/icons/Block';
 
 import { Link } from 'react-router-dom';
 
@@ -55,6 +56,13 @@ const MenuDrawer = ({ open }) => {
             <BarChartIcon />
           </ListItemIcon>
           <ListItemText>DigitalTwin</ListItemText>
+        </ListItem>
+
+        <ListItem button key='4' component={Link} to='/forbiddenCity'>
+          <ListItemIcon>
+            <BlockIcon />
+          </ListItemIcon>
+          <ListItemText>Forbidden</ListItemText>
         </ListItem>
       </List>
 

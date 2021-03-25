@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import initializeViewer from './viewer-helper';
 import { useSelector } from 'react-redux';
 import DTExtension from './DTExtension';
-import ReactPanelExtension from './TestReactPanel/ReactPanelExtension';
 
 const Viewer = () => {
   const urn =

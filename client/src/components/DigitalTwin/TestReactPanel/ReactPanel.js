@@ -1,5 +1,4 @@
 /*global Autodesk*/
-import ReactPanelContent from './ReactPanelContent';
 import ReactDOM from 'react-dom';
 import './ReactPanel.scss';
 import React from 'react';
@@ -12,6 +11,9 @@ export default class ReactPanel extends Autodesk.Viewing.UI.DockingPanel {
       viewer,
     });
 
+    this.state = {
+      videoId: options.id,
+    };
     this.container.classList.add('react-docking-panel');
     this.DOMContent = document.createElement('div');
     this.DOMContent.className = 'content';
@@ -29,7 +31,7 @@ export default class ReactPanel extends Autodesk.Viewing.UI.DockingPanel {
     super.setVisible(show);
 
     if (show) {
-      this.reactNode = ReactDOM.render(<VideoTest />, this.DOMContent);
+      this.reactNode = ReactDOM.render(<VideoTest id={this.state.videoId} />, this.DOMContent);
     } else if (this.reactNode) {
       ReactDOM.unmountComponentAtNode(this.DOMContent);
 

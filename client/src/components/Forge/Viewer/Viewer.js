@@ -3,6 +3,7 @@ import { useEffect, useContext } from 'react';
 import initializeViewer from './viewer-helper';
 import { UrnContext } from '../Context';
 import QuantityExtension from '../Extensions/QuantityExtension';
+import HandleSelection from '../Extensions/HandleSelection';
 import { useSelector } from 'react-redux';
 
 const Viewer = () => {
@@ -32,6 +33,7 @@ const Viewer = () => {
     <>
       <div id='viewerContainer'></div>
       <QuantityExtension />
+      {/* <HandleSelection /> */}
     </>
   );
 };

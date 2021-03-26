@@ -1,6 +1,10 @@
 import React, { useContext } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { ResolutionValueContext, SelectedPropertyIdContext, ShowHeatMapContext } from '../ForbiddenContext';
+import {
+  ResolutionValueContext,
+  SelectedPropertyIdContext,
+  ShowHeatMapContext,
+} from '../ForbiddenContext';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
@@ -106,7 +110,7 @@ const ShaderOptionsMenu = (props) => {
 
   function generateSensorProperties() {
     // Properties are currently hardcoded
-    const allProperties = ['Temperature', 'Humidity', 'CO2'];
+    const allProperties = ['temperature', 'humidity', 'co2'];
     return allProperties.map((propId) => {
       return (
         <MenuItem key={propId} value={propId}>
@@ -141,8 +145,7 @@ const ShaderOptionsMenu = (props) => {
           {generateSensorProperties()}
         </TextField>
       </SensorCustomForm>
-
-      <ResolutionCustomForm>
+      {/* <ResolutionCustomForm>
         <TextField
           select
           variant='filled'
@@ -153,7 +156,8 @@ const ShaderOptionsMenu = (props) => {
         >
           {generateResolutions()}
         </TextField>
-      </ResolutionCustomForm>
+      </ResolutionCustomForm> */}
+      &nbsp;&nbsp;
       <Tooltip title={showHeatMap ? 'Hide HeatMap' : 'Show HeatMap'}>
         <CustomIconButton id='showHeatMap' onClick={handleHeatmapCheckboxChange}>
           {showHeatMap ? (

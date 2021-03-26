@@ -1,5 +1,9 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { ResolutionValueContext, SelectedPropertyIdContext, ShowHeatMapContext } from '../ForbiddenContext';
+import {
+  ResolutionValueContext,
+  SelectedPropertyIdContext,
+  ShowHeatMapContext,
+} from '../ForbiddenContext';
 import useStyles from './styles';
 
 import ShaderSlider from './ShaderSlider';

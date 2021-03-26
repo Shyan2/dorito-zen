@@ -1,13 +1,41 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { SelectedPropertyIdContext } from '../ForbiddenContext';
 import useStyles from './styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
 
 const PropIdGradientMap = {
-  Temperature: [0x0000ff, 0x00ff00, 0xffff00, 0xff0000],
-  Humidity: [0x00f260, 0x0575e6],
-  CO2: [0x1e9600, 0xfff200, 0xff0000],
+  temperature: [0x0000ff, 0x00ff00, 0xffff00, 0xff0000],
+  humidity: [0x00f260, 0x0575e6],
+  co2: [0x1e9600, 0xfff200, 0xff0000],
 };
+
+const useSliderStyle = makeStyles({
+  rail: {
+    backgroundImage: (props) => props.backgroundImage,
+    height: '10px',
+    opacity: '1',
+    left: 0,
+    borderRadius: '10px',
+  },
+  mark: {
+    backgroundColor: '#ffffff33',
+    height: 10,
+    width: 1,
+    left: 0,
+  },
+  root: {
+    width: '30%',
+    margin: '1%',
+    marginTop: '20px',
+    '& .MuiSlider-markLabel': {
+      color: '#000000',
+    },
+  },
+  thumb: {
+    display: 'none',
+  },
+});
 
 const ShaderSlider = (props) => {
   const { selectedPropertyId } = useContext(SelectedPropertyIdContext);
@@ -38,21 +66,21 @@ const ShaderSlider = (props) => {
     // let propertyInfo = props.getPropertyRanges(propertyId);
     let propertyInfo = '';
     switch (propertyId) {
-      case 'Temperature':
+      case 'temperature':
         propertyInfo = {
           rangeMin: 0,
           rangeMax: 30,
           dataUnit: '℃',
         };
         break;
-      case 'Humidity':
+      case 'humidity':
         propertyInfo = {
           rangeMin: 0,
           rangeMax: 44,
           dataUnit: '%RH',
         };
         break;
-      case 'CO2':
+      case 'co2':
         propertyInfo = {
           rangeMin: 500,
           rangeMax: 650,
@@ -77,14 +105,24 @@ const ShaderSlider = (props) => {
     });
     return localMarks;
   };
-  const rail = useStyles({ backgroundImage: generateGradientStyle(PropIdGradientMap, selectedPropertyId) });
+  const rail = useSliderStyle({
+    backgroundImage: generateGradientStyle(PropIdGradientMap, selectedPropertyId),
+  });
 
   useEffect(() => {
     // Re-generate slider marks based on the selected property type.
     setSliderMarks(generateMarks(selectedPropertyId));
   }, [selectedPropertyId]);
 
-  return <Slider classes={rail} valueLabelDisplay='off' marks={sliderMarks} track={false} disabled={true} />;
+  return (
+    <Slider
+      classes={rail}
+      valueLabelDisplay='off'
+      marks={sliderMarks}
+      track={false}
+      disabled={true}
+    />
+  );
 };
 
 export default ShaderSlider;

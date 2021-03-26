@@ -28,7 +28,7 @@ class ForbiddenCityToolbarExtension extends Autodesk.Viewing.Extension {
 
     // SubToolbar
     this.subToolbar = new Autodesk.Viewing.UI.ControlGroup('textured-heatmap-toolbar');
-    this.subToolbar.addControl(button1);
+    // this.subToolbar.addControl(button1);
     this.subToolbar.addControl(button2);
 
     toolbar.addControl(this.subToolbar);

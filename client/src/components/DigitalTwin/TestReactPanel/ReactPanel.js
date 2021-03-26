@@ -13,8 +13,12 @@ export default class ReactPanel extends Autodesk.Viewing.UI.DockingPanel {
 
     this.state = {
       videoId: options.id,
+      xcoords: options.xcoords,
+      ycoords: options.ycoords,
     };
     this.container.classList.add('react-docking-panel');
+    this.container.style.left = this.state.xcoords - 46 + 'px';
+    this.container.style.top = this.state.ycoords - 200 + 'px';
     this.DOMContent = document.createElement('div');
     this.DOMContent.className = 'content';
     this.container.appendChild(this.DOMContent);
@@ -31,7 +35,14 @@ export default class ReactPanel extends Autodesk.Viewing.UI.DockingPanel {
     super.setVisible(show);
 
     if (show) {
-      this.reactNode = ReactDOM.render(<VideoTest id={this.state.videoId} />, this.DOMContent);
+      this.reactNode = ReactDOM.render(
+        <VideoTest
+          id={this.state.videoId}
+          xcoords={this.state.xcoords}
+          ycoords={this.state.ycoords}
+        />,
+        this.DOMContent
+      );
     } else if (this.reactNode) {
       ReactDOM.unmountComponentAtNode(this.DOMContent);
 

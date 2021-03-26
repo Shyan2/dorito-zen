@@ -1,6 +1,10 @@
 /*global Autodesk, THREE*/
 import React, { useState, useMemo, useEffect, useRef, useContext } from 'react';
-import { ResolutionValueContext, SelectedPropertyIdContext, ShowHeatMapContext } from './ForbiddenContext';
+import {
+  ResolutionValueContext,
+  SelectedPropertyIdContext,
+  ShowHeatMapContext,
+} from './ForbiddenContext';
 
 import Viewer from './Viewer';
 
@@ -15,9 +19,12 @@ import sensorDescriptors from './sensorsList';
 import HeatmapOptions from './HeatmapOptions/HeatmapOptions';
 import ReactPanel from '../DigitalTwin/TestReactPanel/ReactPanel';
 import ForbiddenCityToolbarExtension from './ToolbarClass';
+import CustomToolTip from './CustomToolTip';
+
+const SpriteSize = 32;
 
 const SensorStyleDefinitions = {
-  temperature: {
+  thermometer: {
     url: tempSVG,
     color: 0xffffff,
   },
@@ -31,7 +38,10 @@ const SensorStyleDefinitions = {
   },
 };
 
-Autodesk.Viewing.theExtensionManager.registerExtension('ForbiddenCityToolbarExtension', ForbiddenCityToolbarExtension);
+Autodesk.Viewing.theExtensionManager.registerExtension(
+  'ForbiddenCityToolbarExtension',
+  ForbiddenCityToolbarExtension
+);
 
 const getNormalizedSensorValue = function (sensorName, sensorType) {
   // Returns a normalized value based on the min/max temperatures
@@ -41,20 +51,26 @@ const getNormalizedSensorValue = function (sensorName, sensorType) {
 const ForbiddenCity = () => {
   // Context setup
   const [resolutionValue, setResolutionValue] = useState('PT1H');
-  const [selectedPropertyId, setSelectedPropertyId] = useState('Temperature');
+  const [selectedPropertyId, setSelectedPropertyId] = useState('temperature');
   const [showHeatMap, setShowHeatMap] = useState(true);
 
-  const resolutionVal = useMemo(() => ({ resolutionValue, setResolutionValue }), [resolutionValue, setResolutionValue]);
+  const resolutionVal = useMemo(() => ({ resolutionValue, setResolutionValue }), [
+    resolutionValue,
+    setResolutionValue,
+  ]);
   const selectedPropertyIdVal = useMemo(() => ({ selectedPropertyId, setSelectedPropertyId }), [
     selectedPropertyId,
     setSelectedPropertyId,
   ]);
-  const showHeatMapVal = useMemo(() => ({ showHeatMap, setShowHeatMap }), [showHeatMap, setShowHeatMap]);
+  const showHeatMapVal = useMemo(() => ({ showHeatMap, setShowHeatMap }), [
+    showHeatMap,
+    setShowHeatMap,
+  ]);
   // End Context setup
 
   const [dataVizExt, setDataVizExt] = useState(null);
   const [camerasVisible, setCamerasVisible] = useState(true);
-  const [shadingVisible, setShadingVisible] = useState(false);
+  const [hoveredDeviceInfo, setHoveredDeviceInfo] = useState({});
 
   const dataVizExtRef = useRef(null);
   dataVizExtRef.current = dataVizExt;
@@ -64,10 +80,6 @@ const ForbiddenCity = () => {
 
   const camerasVisiblityHandler = () => {
     setCamerasVisible((prevCamerasVisible) => !prevCamerasVisible);
-  };
-
-  const shadingVisiblityHandler = () => {
-    setShadingVisible((prevShadingVisible) => !prevShadingVisible);
   };
 
   function generateSimulationData() {
@@ -85,43 +97,89 @@ const ForbiddenCity = () => {
         sensorTypes: ['temperature'],
       });
     }
+    console.log(simulationData);
 
-    return [simulationData];
+    const copySimulationData = {
+      id: 'floor1',
+      dbIds: [100],
+      sensors: [],
+    };
+
+    devices.forEach((device) => {
+      if (device.type === 'thermometer') {
+        copySimulationData.sensors.push({
+          id: device.name,
+          position: device.position,
+          type: device.type,
+          sensorTypes: device.sensorTypes,
+        });
+      }
+    });
+    // for (let sensor in devices) {
+    //   if (sensor.type === 'thermometer') {
+    //     copySimulationData.sensors.push({
+    //       id: sensor,
+    //       position: devices[sensor].position,
+    //       type: 'thermometer',
+    //       sensorTypes: ['temperature'],
+    //     });
+    //   }
+    // }
+    console.log(copySimulationData);
+
+    return [copySimulationData];
   }
 
-  async function generateViewableData(dataItems) {
-    // Create a visual style shared by all the thermometers since they're the same type.
-    const deviceType = 'thermometer';
-    const styleColor = 0xffffff;
-    const styleIconUrl = tempSVG;
+  async function generateViewableData() {
     const dataVizExtn = Autodesk.DataVisualization.Core;
 
-    const thermStyle = new dataVizExtn.ViewableStyle(
-      dataVizExtn.ViewableType.SPRITE,
-      new THREE.Color(styleColor),
-      styleIconUrl
-    );
+    var styleMap = {};
+    // Create model-to-style map from style definitions
+    Object.entries(SensorStyleDefinitions).forEach(([type, styleDef]) => {
+      styleMap[type] = new dataVizExtn.ViewableStyle(
+        dataVizExtn.ViewableType.SPRITE,
+        new THREE.Color(styleDef.color),
+        styleDef.url
+      );
+    });
 
     const viewableData = new dataVizExtn.ViewableData();
-    viewableData.spriteSize = 16;
+    viewableData.spriteSize = SpriteSize;
 
-    const devices = [];
-    const dataItem = dataItems[0];
+    devices.forEach((device, index) => {
+      const dbId = 100 + index;
+      let style = styleMap[device.type] || styleMap['default'];
+      const viewable = new dataVizExtn.SpriteViewable(device.position, style, dbId);
 
-    dataItem.sensors.forEach((sensor) => {
-      devices.push({
-        id: sensor.id,
-        position: sensor.position,
-        type: sensor.type,
-      });
-    });
+      // viewable.sensorType = device.type;
+      // viewable.remoteId = device.id;
+      // viewable.name = device.name;
+      // viewable.sensorTypes = device.sensorTypes;
 
-    let viewableDbId = 1;
-    devices.forEach((device) => {
-      const viewable = new dataVizExtn.SpriteViewable(device.position, thermStyle, viewableDbId);
       viewableData.addViewable(viewable);
-      viewableDbId++;
     });
+
+    const viewableType = Autodesk.DataVisualization.Core.ViewableType.SPRITE;
+    const spriteColor = new THREE.Color(0x00ff00);
+    const spriteIconUrl = defaultSVG;
+    const style = new Autodesk.DataVisualization.Core.ViewableStyle(
+      viewableType,
+      spriteColor,
+      spriteIconUrl
+    );
+    const viewable1 = new Autodesk.DataVisualization.Core.SpriteViewable(
+      { x: 200, y: 2, z: 3 },
+      style,
+      394892
+    );
+    viewableData.addViewable(viewable1);
+
+    const viewable2 = new Autodesk.DataVisualization.Core.SpriteViewable(
+      { x: 100, y: 10, z: 5 },
+      style,
+      394893
+    );
+    viewableData.addViewable(viewable2);
 
     await viewableData.finish();
     return viewableData;
@@ -140,7 +198,11 @@ const ForbiddenCity = () => {
 
       item.sensors.forEach((sensor) => {
         // A `SurfaceShadingPoint` represents a physical device (i.e. thermometer) with a position.
-        const shadingPoint = new SurfaceShadingPoint(sensor.id, sensor.position, sensor.sensorTypes);
+        const shadingPoint = new SurfaceShadingPoint(
+          sensor.id,
+          sensor.position,
+          sensor.sensorTypes
+        );
 
         // If the position is not specified during construction, it can be derived from
         // the center of geometry of the sensor is being represented by a valid dbId.
@@ -200,6 +262,22 @@ const ForbiddenCity = () => {
       }, 200);
     }
   }
+  // const onModelLoaded = async (viewer, data) => {
+  //   const dataVizExt = await viewer.loadExtension('Autodesk.DataVisualization', {
+  //     useInternal: true,
+  //   });
+  //   const DATAVIZEXTN = Autodesk.DataVisualization.Core;
+
+  //   const simulationData = generateSimulationData();
+  //   const viewableData = await generateViewableData(simulationData);
+
+  //   dataVizExt.addViewables(viewableData);
+  //   const onItemClick = (event) => {
+  //     console.log(`User has selected sprite with dbId - ${event.dbId}`);
+  //   };
+
+  //   viewer.addEventListener(DATAVIZEXTN.MOUSE_CLICK, onItemClick);
+  // };
 
   const onModelLoaded = async (viewer, data) => {
     // load toolbar
@@ -222,59 +300,41 @@ const ForbiddenCity = () => {
     const dataVizExt = await viewer.loadExtension('Autodesk.DataVisualization', {
       useInternal: true,
     });
-    console.log(dataVizExt);
     const DATAVIZEXTN = Autodesk.DataVisualization.Core;
 
-    // FOR CAMERAS
-    var styleMap = {};
-    // Create model-to-style map from style definitions
-    Object.entries(SensorStyleDefinitions).forEach(([type, styleDef]) => {
-      styleMap[type] = new DATAVIZEXTN.ViewableStyle(
-        DATAVIZEXTN.ViewableType.SPRITE,
-        new THREE.Color(styleDef.color),
-        styleDef.url
-      );
-    });
+    // // FOR CAMERAS
+    // var styleMap = {};
+    // // Create model-to-style map from style definitions
+    // Object.entries(SensorStyleDefinitions).forEach(([type, styleDef]) => {
+    //   styleMap[type] = new DATAVIZEXTN.ViewableStyle(
+    //     DATAVIZEXTN.ViewableType.SPRITE,
+    //     new THREE.Color(styleDef.color),
+    //     styleDef.url
+    //   );
+    // });
 
-    const camViewableData = new DATAVIZEXTN.ViewableData();
-    camViewableData.spriteSize = 24;
+    // const camViewableData = new DATAVIZEXTN.ViewableData();
+    // camViewableData.spriteSize = 50;
 
-    devices.forEach((device) => {
-      let style = styleMap[device.type] || styleMap['default'];
-      const viewable = new DATAVIZEXTN.SpriteViewable(device.position, style, parseInt(device.id));
-      camViewableData.addViewable(viewable);
-    });
+    // cameraDevices.forEach((device) => {
+    //   let style = styleMap[device.type] || styleMap['default'];
+    //   const viewable = new DATAVIZEXTN.SpriteViewable(device.position, style, parseInt(device.id));
+    //   camViewableData.addViewable(viewable);
+    // });
 
-    await camViewableData.finish();
-    dataVizExt.addViewables(camViewableData);
+    // await camViewableData.finish();
+    // dataVizExt.addViewables(camViewableData);
     // setDataVizExt(dataVizExt);
-    // if (camerasVisible) {
-    //   console.log('Cameras added!');
-    //   dataVizExt.addViewables(camViewableData);
-    // } else {
-    //   console.log('Cameras removed');
-    //   dataVizExt.removeViewables();
-    // }
-
-    const onItemClick = (event) => {
-      console.log(event);
-      const newPanel = new ReactPanel(viewer, {
-        id: event.dbId,
-        title: 'Video stream',
-      });
-      newPanel.setVisible(true);
-    };
     // END CAMERA
 
     // START HEATMAP
     const simulationData = generateSimulationData();
-
     const viewableData = await generateViewableData(simulationData);
-    console.log(viewableData);
-    console.log(camViewableData);
-    dataVizExt.addViewables(viewableData);
+    // dataVizExt.addViewables(viewableData);
 
+    // FOR SHADING
     const shadingData = generateSurfaceShadingData(simulationData, data.model);
+
     shadingData.initialize(data.model);
     await dataVizExt.setupSurfaceShading(data.model, shadingData, {
       type: 'PlanarHeatmap',
@@ -282,47 +342,113 @@ const ForbiddenCity = () => {
     });
 
     // // Represents temperature range with three color stops.
-    dataVizExt.registerSurfaceShadingColors('temperature', [0x0000ff, 0x00ff00, 0xffff00, 0xff0000]);
+    dataVizExt.registerSurfaceShadingColors('temperature', [
+      0x0000ff,
+      0x00ff00,
+      0xffff00,
+      0xff0000,
+    ]);
+
+    dataVizExt.registerSurfaceShadingColors('humidity', [0x00f260, 0x0575e6]);
+    dataVizExt.registerSurfaceShadingColors('CO2', [0x1e9600, 0xfff200, 0xff0000]);
 
     dataVizExt.renderSurfaceShading(['floor1'], 'temperature', getSensorValue, 300);
     setDataVizExt(dataVizExt);
 
-    // // Zoom in for better view of the heatmap
-    viewer.fitToView([simulationData[0].dbIds]);
-
     // END HEATMAP
 
     // UTILS and ADD event listeners
-    const onItemHover = (event) => {
+    const onItemHover = async (event) => {
       // console.log('Hovered!: ', event.dbId);
+      const itemData = dataVizExt.viewableData.viewables.find((v) => v.dbId == event.dbId);
+
+      if (itemData) {
+        const position = itemData.position;
+        const mappedPosition = viewer.impl.worldToClient(position);
+
+        // Accounting for vertical offset of viewer container.
+        const vertificalOffset = event.originalEvent.clientY - event.originalEvent.offsetY;
+        setHoveredDeviceInfo({
+          id: itemData.dbId,
+          sensorType: itemData.sensorType,
+          xcoord: mappedPosition.x,
+          ycoord:
+            mappedPosition.y + vertificalOffset - SpriteSize / viewer.getWindow().devicePixelRatio,
+        });
+      } else {
+        setHoveredDeviceInfo({});
+      }
     };
-    // const DataVizCore = Autodesk.DataVisualization.Core;
+
+    const onItemClick = (event) => {
+      console.log(`User has selected sprite with dbId - ${event.dbId}`);
+      const itemData = dataVizExt.viewableData.viewables.find((v) => v.dbId == event.dbId);
+
+      if (itemData?.sensorType === 'camera') {
+        const position = itemData.position;
+        const mappedPosition = viewer.impl.worldToClient(position);
+        const vertificalOffset = event.originalEvent.clientY - event.originalEvent.offsetY;
+
+        const newPanel = new ReactPanel(viewer, {
+          id: itemData.remoteId,
+          title: itemData.name,
+          xcoords: mappedPosition.x,
+          ycoords:
+            mappedPosition.y + vertificalOffset - SpriteSize / viewer.getWindow().devicePixelRatio,
+        });
+        newPanel.setVisible(true);
+      }
+
+      if (itemData?.sensorType === 'thermometer') {
+        console.log('Clicked on thermometer!');
+      }
+    };
+
     viewer.addEventListener(DATAVIZEXTN.MOUSE_CLICK, onItemClick);
     viewer.addEventListener(DATAVIZEXTN.MOUSE_HOVERING, onItemHover);
 
-    // document.getElementsByClassName('textured-heatmap-playbutton')[0].onclick = shadingVisiblityHandler;
-    document.getElementsByClassName('textured-heatmap-playbutton')[0].onclick = startAnimation;
-    document.getElementsByClassName('textured-heatmap-showhide-button')[0].onclick = camerasVisiblityHandler;
+    dataVizExt.addViewables(viewableData);
+    // document.getElementsByClassName('textured-heatmap-playbutton')[0].onclick = startAnimation;
+    document.getElementsByClassName(
+      'textured-heatmap-showhide-button'
+    )[0].onclick = camerasVisiblityHandler;
   };
 
   useEffect(() => {
     if (dataVizExt) {
-      console.log(dataVizExt);
       dataVizExt.showHideViewables(camerasVisible);
     }
   }, [dataVizExt, camerasVisible]);
+
+  useEffect(() => {
+    if (dataVizExt) {
+      if (showHeatMap) {
+        dataVizExt.renderSurfaceShading(['floor1'], selectedPropertyId, getSensorValue, 300);
+      } else {
+        dataVizExt.removeSurfaceShading();
+      }
+    }
+  }, [dataVizExt, showHeatMap]);
 
   return (
     <ResolutionValueContext.Provider value={resolutionVal}>
       <SelectedPropertyIdContext.Provider value={selectedPropertyIdVal}>
         <ShowHeatMapContext.Provider value={showHeatMapVal}>
           <React.Fragment>
+            <CustomToolTip hoveredDeviceInfo={hoveredDeviceInfo} />
             <Viewer onModelLoaded={onModelLoaded} />
             <HeatmapOptions />
             <img
               className='logo'
               src={wspLogoPng}
-              style={{ width: '5%', bottom: '12px', position: 'absolute', zIndex: 2, left: '75px', opacity: 0.7 }}
+              style={{
+                width: '5%',
+                bottom: '12px',
+                position: 'absolute',
+                zIndex: 2,
+                left: '75px',
+                opacity: 0.7,
+              }}
             ></img>
           </React.Fragment>
         </ShowHeatMapContext.Provider>

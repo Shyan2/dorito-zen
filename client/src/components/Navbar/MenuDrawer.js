@@ -51,11 +51,11 @@ const MenuDrawer = ({ open }) => {
           <ListItemText>Models</ListItemText>
         </ListItem>
 
-        <ListItem button key='3' component={Link} to='/IoT'>
+        <ListItem button key='3' component={Link} to='/powerBI'>
           <ListItemIcon>
             <BarChartIcon />
           </ListItemIcon>
-          <ListItemText>DigitalTwin</ListItemText>
+          <ListItemText>PowerBI</ListItemText>
         </ListItem>
 
         <ListItem button key='4' component={Link} to='/forbiddenCity'>

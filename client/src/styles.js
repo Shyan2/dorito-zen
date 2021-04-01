@@ -3,13 +3,14 @@ import { makeStyles } from '@material-ui/core/styles';
 export default makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
-    minHeight: '100%',
+    // minHeight: '100%',
+    // height: 'calc(100vh - 64px)',
+    // minWidth: '100%',
     paddingBottom: 0,
     paddingTop: '64px',
-    // paddingLeft: theme.spacing(4),
     paddingLeft: '56px',
     paddingRight: 0,
-    display: 'flex',
+    flexGrow: 1,
   },
 
   container: {

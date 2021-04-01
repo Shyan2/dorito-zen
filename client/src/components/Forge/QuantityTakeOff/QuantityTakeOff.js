@@ -65,10 +65,7 @@ const QuantityTakeOff = () => {
           ) : null}
           &nbsp;
           {filterValues.length > 0 ? (
-            <Table
-              data={newFilterProperties(filteredValues)}
-              filters={filterValues}
-            />
+            <Table data={newFilterProperties(filteredValues)} filters={filterValues} />
           ) : (
             <Table data={filteredValues} />
           )}

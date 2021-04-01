@@ -115,16 +115,7 @@ const ForbiddenCity = () => {
         });
       }
     });
-    // for (let sensor in devices) {
-    //   if (sensor.type === 'thermometer') {
-    //     copySimulationData.sensors.push({
-    //       id: sensor,
-    //       position: devices[sensor].position,
-    //       type: 'thermometer',
-    //       sensorTypes: ['temperature'],
-    //     });
-    //   }
-    // }
+
     console.log(copySimulationData);
 
     return [copySimulationData];
@@ -151,35 +142,13 @@ const ForbiddenCity = () => {
       let style = styleMap[device.type] || styleMap['default'];
       const viewable = new dataVizExtn.SpriteViewable(device.position, style, dbId);
 
-      // viewable.sensorType = device.type;
-      // viewable.remoteId = device.id;
-      // viewable.name = device.name;
-      // viewable.sensorTypes = device.sensorTypes;
+      viewable.sensorType = device.type;
+      viewable.remoteId = device.id;
+      viewable.name = device.name;
+      viewable.sensorTypes = device.sensorTypes;
 
       viewableData.addViewable(viewable);
     });
-
-    const viewableType = Autodesk.DataVisualization.Core.ViewableType.SPRITE;
-    const spriteColor = new THREE.Color(0x00ff00);
-    const spriteIconUrl = defaultSVG;
-    const style = new Autodesk.DataVisualization.Core.ViewableStyle(
-      viewableType,
-      spriteColor,
-      spriteIconUrl
-    );
-    const viewable1 = new Autodesk.DataVisualization.Core.SpriteViewable(
-      { x: 200, y: 2, z: 3 },
-      style,
-      394892
-    );
-    viewableData.addViewable(viewable1);
-
-    const viewable2 = new Autodesk.DataVisualization.Core.SpriteViewable(
-      { x: 100, y: 10, z: 5 },
-      style,
-      394893
-    );
-    viewableData.addViewable(viewable2);
 
     await viewableData.finish();
     return viewableData;

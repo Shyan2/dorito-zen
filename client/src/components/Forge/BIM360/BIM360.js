@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1, 1, 0, 0),
   },
   tree: {
-    padding: theme.spacing(1, 3, 3, 3),
+    padding: theme.spacing(1, 2, 2, 2),
     flexGrow: 1,
   },
 }));
@@ -62,9 +62,7 @@ const BIM360 = () => {
     } catch (err) {
       console.log(err);
     }
-    const newWindow = window.open(
-      'https://accounts.autodesk.com/Authentication/LogOut'
-    );
+    const newWindow = window.open('https://accounts.autodesk.com/Authentication/LogOut');
 
     setTimeout(() => {
       if (newWindow) {
@@ -105,8 +103,8 @@ const BIM360 = () => {
           &nbsp;
           <Grid item>
             <Button
-              variant='contained'
-              color='primary'
+              variant='outlined'
+              color='secondary'
               href={loginLink}
               onClick={() => {
                 console.log('Login clicked!');
@@ -117,16 +115,22 @@ const BIM360 = () => {
           </Grid>
         </Grid>
       ) : (
-        <Grid container>
-          <Grid item sm={10}>
-            <Typography className={classes.typography} variant='h5'>
+        <Grid container justify='center'>
+          <Grid item xs={10}>
+            <Typography
+              variant='h5'
+              className={classes.typography}
+              style={{ flex: 1 }}
+              gutterBottom
+            >
               {userName}
             </Typography>
           </Grid>
-          <Grid item sm={2}>
+          <Grid item container xs={2} justify='flex-end'>
             <Button
-              className={classes.button}
-              variant='outlined'
+              style={{ alignContent: 'flex-end', justify: 'flex-end' }}
+              // className={classes.button}
+              // variant='outlined'
               color='secondary'
               size='small'
               onClick={() => {

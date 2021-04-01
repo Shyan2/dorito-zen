@@ -5,7 +5,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import Home from './components/Home/Home';
 import Auth from './components/Auth/Auth';
-import DigitalTwin from './components/DigitalTwin/DigitalTwin';
+import PowerBI from './components/PowerBI/PowerBI';
 import Models from './components/Forge/Models/Models';
 import theme from './theme';
 import useStyles from './styles';
@@ -24,7 +24,7 @@ const App = () => {
               <Route path='/' exact component={Home} />
               <Route path='/auth' exact component={Auth} />
               <Route path='/models' exact component={Models} />
-              <Route path='/IoT' exact component={DigitalTwin} />
+              <Route path='/powerBI' exact component={PowerBI} />
               <Route path='/forbiddenCity' exact component={ForbiddenCity} />
             </Switch>
           </Container>

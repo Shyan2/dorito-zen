@@ -9,9 +9,7 @@ const QuantityExtension = () => {
     Autodesk.Viewing.Extension.call(this, viewer, options);
   }
 
-  QuantityExtension.prototype = Object.create(
-    Autodesk.Viewing.Extension.prototype
-  );
+  QuantityExtension.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
 
   QuantityExtension.prototype.constructor = QuantityExtension;
 
@@ -76,10 +74,7 @@ const QuantityExtension = () => {
     return true;
   };
 
-  Autodesk.Viewing.theExtensionManager.registerExtension(
-    'QuantityExtension',
-    QuantityExtension
-  );
+  Autodesk.Viewing.theExtensionManager.registerExtension('QuantityExtension', QuantityExtension);
 
   return null;
 };

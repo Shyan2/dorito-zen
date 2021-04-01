@@ -86,37 +86,33 @@ const FileTree = () => {
         }
       }}
     >
-      {Array.isArray(nodes.children)
-        ? nodes.children.map((node) => renderTree(node))
-        : null}
+      {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
     </TreeItem>
   );
 
   return (
-    <div className={classes.root}>
-      <Grow in>
-        <Paper className={classes.paperRoot} variant='outlined' width='1'>
-          <Typography className={classes.typography} gutterBottom variant='h5'>
-            BIM360
-          </Typography>
-          <BIM360 />
-          &nbsp;
-          <Typography className={classes.typography} variant='h5' gutterBottom>
-            Default
-          </Typography>
-          <TreeView
-            // className={classes.tree}
-            // TODO: Why doesnt the classses.tree work? It (the padding) is being overwritten by .MuiTreeView-root.
-            style={{ padding: '8px 24px' }}
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpanded={['root']}
-            defaultExpandIcon={<ChevronRightIcon />}
-          >
-            {isLoading ? <Loader /> : tree.map((item) => renderTree(item))}
-          </TreeView>
-        </Paper>
-      </Grow>
-    </div>
+    <Grow in>
+      <Paper className={classes.paperRoot} variant='outlined' width='1'>
+        <Typography className={classes.typography} gutterBottom variant='h5'>
+          BIM360
+        </Typography>
+        <BIM360 />
+        &nbsp;
+        <Typography className={classes.typography} variant='h5' gutterBottom>
+          Default
+        </Typography>
+        <TreeView
+          className={classes.tree}
+          // TODO: Why doesnt the classses.tree work? It (the padding) is being overwritten by .MuiTreeView-root.
+          style={{ padding: '8px 24px' }}
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpanded={['root']}
+          defaultExpandIcon={<ChevronRightIcon />}
+        >
+          {isLoading ? <Loader /> : tree.map((item) => renderTree(item))}
+        </TreeView>
+      </Paper>
+    </Grow>
   );
 };
 

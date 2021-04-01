@@ -13,13 +13,13 @@ const Home = () => {
   }, []);
 
   return (
-    <Grow in>
-      <Grid container spacing={3}>
+    <React.Fragment>
+      <Grow in>
         <Grid item xs={12} sm={7}>
           Home page
         </Grid>
-      </Grid>
-    </Grow>
+      </Grow>
+    </React.Fragment>
   );
 };
 

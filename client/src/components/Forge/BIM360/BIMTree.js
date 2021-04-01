@@ -19,7 +19,7 @@ const SERVER_URL = 'http://localhost:9001';
 
 const useStyles = makeStyles((theme) => ({
   tree: {
-    padding: theme.spacing(0.5, 0, 0, 0),
+    // padding: theme.spacing(0.5, 0, 0, 0),
     flexGrow: 1,
   },
 }));

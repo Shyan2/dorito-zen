@@ -10,7 +10,7 @@ const style = new Autodesk.DataVisualization.Core.ViewableStyle(
 const viewableData = new Autodesk.DataVisualization.Core.ViewableData();
 viewableData.spriteSize = 24; // Sprites as points of size 24 x 24 pixels
 const viewable1 = new Autodesk.DataVisualization.Core.SpriteViewable(
-  { x: 200, y: 2, z: 3 },
+  { x: 200, y: 300, z: 10 },
   style,
   394892
 );

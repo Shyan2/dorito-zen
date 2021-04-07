@@ -10,6 +10,7 @@ import Models from './components/Forge/Models/Models';
 import theme from './theme';
 import useStyles from './styles';
 import ForbiddenCity from './components/ForbiddenCity/ForbiddenCity';
+import GDrive from './components/GDrive/GDrive';
 
 const App = () => {
   const classes = useStyles();
@@ -26,6 +27,7 @@ const App = () => {
               <Route path='/models' exact component={Models} />
               <Route path='/powerBI' exact component={PowerBI} />
               <Route path='/forbiddenCity' exact component={ForbiddenCity} />
+              <Route path='/gdrive' exact component={GDrive} />
             </Switch>
           </Container>
         </BrowserRouter>

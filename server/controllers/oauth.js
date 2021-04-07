@@ -1,4 +1,4 @@
-import { config } from '../../config.js';
+import { config } from '../config.js';
 import pkg from 'forge-apis';
 const { AuthClientTwoLegged, AuthClientThreeLegged } = pkg;
 
@@ -9,12 +9,7 @@ class OAuth {
 
   getClient(scopes = config.scopes.internal) {
     const { client_id, client_secret, callback_url } = config.credentials;
-    return new AuthClientThreeLegged(
-      client_id,
-      client_secret,
-      callback_url,
-      scopes
-    );
+    return new AuthClientThreeLegged(client_id, client_secret, callback_url, scopes);
   }
 
   isAuthorized() {
@@ -49,17 +44,13 @@ class OAuth {
     const internalTokenClient = this.getClient(config.scopes.internal);
     const publicTokenClient = this.getClient(config.scopes.public);
     const internalCredentials = await internalTokenClient.getToken(code);
-    const publicCredentials = await publicTokenClient.refreshToken(
-      internalCredentials
-    );
+    const publicCredentials = await publicTokenClient.refreshToken(internalCredentials);
 
     const now = new Date();
     this._session.internal_token = internalCredentials.access_token;
     this._session.public_token = publicCredentials.access_token;
     this._session.refresh_token = publicCredentials.refresh_token;
-    this._session.expires_at = now.setSeconds(
-      now.getSeconds() + publicCredentials.expires_in
-    );
+    this._session.expires_at = now.setSeconds(now.getSeconds() + publicCredentials.expires_in);
   }
 
   _expiresIn() {
@@ -78,18 +69,30 @@ class OAuth {
     const internalCredentials = await internalTokenClient.refreshToken({
       refresh_token: this._session.refresh_token,
     });
-    const publicCredentials = await publicTokenClient.refreshToken(
-      internalCredentials
-    );
+    const publicCredentials = await publicTokenClient.refreshToken(internalCredentials);
 
     const now = new Date();
     this._session.internal_token = internalCredentials.access_token;
     this._session.public_token = publicCredentials.access_token;
     this._session.refresh_token = publicCredentials.refresh_token;
-    this._session.expires_at = now.setSeconds(
-      now.getSeconds() + publicCredentials.expires_in
-    );
+    this._session.expires_at = now.setSeconds(now.getSeconds() + publicCredentials.expires_in);
   }
+
+  // GOOGLE TOKENS
+  getGoogleToken = async () => {
+    console.log('this._session from getGoogleToken: ', this._session);
+    return this._session.googletoken;
+  };
+
+  setGoogleToken = (token) => {
+    // console.log('Setting token! ', token);
+    this._session.googletoken = token;
+    console.log(this._session);
+  };
+
+  isGoogleAuthorized = () => {
+    return this._session != null && this._session.googletoken != null;
+  };
 } // end oauth class
 
 /**
@@ -99,11 +102,7 @@ class OAuth {
  */
 function getClient(scopes) {
   const { client_id, client_secret } = config.credentials;
-  return new AuthClientTwoLegged(
-    client_id,
-    client_secret,
-    scopes || config.scopes.internal
-  );
+  return new AuthClientTwoLegged(client_id, client_secret, scopes || config.scopes.internal);
 }
 
 let cache = {};

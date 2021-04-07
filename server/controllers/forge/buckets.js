@@ -1,4 +1,4 @@
-import { getPublicTokenTwoLegged, getInternalTokenTwoLegged } from './oauth.js';
+import { getPublicTokenTwoLegged, getInternalTokenTwoLegged } from '../oauth.js';
 import axios from 'axios';
 
 export const getToken2 = async (req, res) => {
@@ -19,14 +19,11 @@ export const getBuckets = async (req, res) => {
   if (!bucket_name || bucket_name === '#') {
     try {
       //retrieve buckets
-      const buckets = await axios.get(
-        'https://developer.api.autodesk.com/oss/v2/buckets',
-        {
-          headers: {
-            Authorization: `Bearer ${token.access_token}`,
-          },
-        }
-      );
+      const buckets = await axios.get('https://developer.api.autodesk.com/oss/v2/buckets', {
+        headers: {
+          Authorization: `Bearer ${token.access_token}`,
+        },
+      });
       res.json(
         buckets.data.items.map((bucket) => {
           return {
@@ -64,5 +61,23 @@ export const getBuckets = async (req, res) => {
     } catch (err) {
       next(err);
     }
+  }
+};
+
+export const getSupportedFormats = async (req, res) => {
+  const token = await getInternalTokenTwoLegged();
+
+  try {
+    const data = await axios.get(
+      'https://developer.api.autodesk.com/modelderivative/v2/designdata/formats',
+      {
+        headers: {
+          Authorization: `Bearer ${token.access_token}`,
+        },
+      }
+    );
+    res.status(200).json(data.data.formats.svf2);
+  } catch (err) {
+    res.send(err);
   }
 };

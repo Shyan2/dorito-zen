@@ -55,12 +55,7 @@ const Navbar = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            component={Link}
-            to='/'
-            className={classes.heading}
-            variant='h5'
-          >
+          <Typography component={Link} to='/' className={classes.heading} variant='h5'>
             Project BIM
           </Typography>
         </Toolbar>
@@ -72,7 +67,9 @@ const Navbar = () => {
               </Avatar>
               <Typography className={classes.userName} variant='h6'>
                 {user.result.name}
+                &nbsp;
               </Typography>
+
               <Button
                 variant='contained'
                 className={classes.logout}

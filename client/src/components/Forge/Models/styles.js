@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paperRoot: {
     // maxHeight: '100vh',
-    maxHeight: 'calc(100vh - 64px)',
+    maxHeight: 'calc(100vh - 48px)',
     height: '80vh',
     // height: '100%',
     overflow: 'auto',

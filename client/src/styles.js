@@ -7,7 +7,7 @@ export default makeStyles((theme) => ({
     // height: 'calc(100vh - 64px)',
     // minWidth: '100%',
     paddingBottom: 0,
-    paddingTop: '64px',
+    paddingTop: '48px',
     paddingLeft: '56px',
     paddingRight: 0,
     flexGrow: 1,

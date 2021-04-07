@@ -10,7 +10,7 @@ export default makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     background: '#f53528',
-    minHeight: '48px',
+    minHeight: 48,
     // padding: '10px 50px',
   },
   root: {
@@ -29,13 +29,13 @@ export default makeStyles((theme) => ({
     textDecoration: 'none',
   },
   toolbar: {
-    minHeight: '48px',
+    minHeight: 48,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
 
     // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
+    // ...theme.mixins.toolbar,
   },
   menuButton: {
     // marginRight: 36,

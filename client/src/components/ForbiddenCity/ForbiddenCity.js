@@ -52,7 +52,7 @@ const ForbiddenCity = () => {
   // Context setup
   const [resolutionValue, setResolutionValue] = useState('PT1H');
   const [selectedPropertyId, setSelectedPropertyId] = useState('temperature');
-  const [showHeatMap, setShowHeatMap] = useState(true);
+  const [showHeatMap, setShowHeatMap] = useState(false);
 
   const resolutionVal = useMemo(() => ({ resolutionValue, setResolutionValue }), [
     resolutionValue,
@@ -69,7 +69,7 @@ const ForbiddenCity = () => {
   // End Context setup
 
   const [dataVizExt, setDataVizExt] = useState(null);
-  const [camerasVisible, setCamerasVisible] = useState(true);
+  const [camerasVisible, setCamerasVisible] = useState(false);
   const [hoveredDeviceInfo, setHoveredDeviceInfo] = useState({});
 
   const dataVizExtRef = useRef(null);

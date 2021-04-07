@@ -2,24 +2,36 @@ import React, { useEffect } from 'react';
 import { Container, Grow, Grid } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { getToken } from '../../actions/forge';
+import MyServices from './MyServices/MyServices';
 
 const Home = () => {
   const dispatch = useDispatch();
 
-  // TODO: only dispatch if token is expiring.
-  // currently the token is fetched at every refresh
   useEffect(() => {
     dispatch(getToken());
   }, []);
 
+  // const CustomCard = ({ classes, image, title, subtitle }) => {
+  //   return (
+  //     <CardActionArea className={classes.actionArea}>
+  //       <Card className={classes.card}>
+  //         <CardMedia classes={classes.mediaStyles} image={image} />
+  //         <CardContent className={classes.content}>
+  //           <Typography className={classes.title} variant={'h2'}>
+  //             {title}
+  //           </Typography>
+  //           <Typography className={classes.subtitle}>{subtitle}</Typography>
+  //         </CardContent>
+  //       </Card>
+  //     </CardActionArea>
+  //   );
+  // };
   return (
-    <React.Fragment>
-      <Grow in>
-        <Grid item xs={12} sm={7}>
-          Home page
-        </Grid>
-      </Grow>
-    </React.Fragment>
+    <Grow in>
+      <Container>
+        <MyServices />
+      </Container>
+    </Grow>
   );
 };
 

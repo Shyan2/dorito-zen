@@ -13,6 +13,7 @@ import DomainIcon from '@material-ui/icons/Domain';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import SettingsIcon from '@material-ui/icons/Settings';
 import BlockIcon from '@material-ui/icons/Block';
+import FolderIcon from '@material-ui/icons/Folder';
 
 import { Link } from 'react-router-dom';
 
@@ -63,6 +64,13 @@ const MenuDrawer = ({ open }) => {
             <BlockIcon />
           </ListItemIcon>
           <ListItemText>Forbidden</ListItemText>
+        </ListItem>
+
+        <ListItem button key='5' component={Link} to='/gdrive'>
+          <ListItemIcon>
+            <FolderIcon />
+          </ListItemIcon>
+          <ListItemText>GDrive</ListItemText>
         </ListItem>
       </List>
 

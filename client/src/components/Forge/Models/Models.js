@@ -36,11 +36,10 @@ const Models = () => {
       <QuantityContext.Provider value={quantityValue}>
         <Grow in>
           <Container maxWidth={false} className={classes.modelContainer}>
-            <Grid container className={classes.gridContainer} spacing={3}>
+            <Grid container className={classes.gridContainer}>
               <Grid item xs={12} sm={12} md={4} lg={3}>
                 <FileTree />
               </Grid>
-
               <Grid item xs={12} sm={12} md={8} lg={9}>
                 <Viewer />
               </Grid>

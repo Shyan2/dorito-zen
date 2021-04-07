@@ -16,8 +16,14 @@ export const config = {
       'data:read',
       'data:create',
       'data:write',
+      'account:read',
     ],
     // Required scope for the client-side viewer
     public: ['data:read'],
+  },
+  google: {
+    callback_url: process.env.GOOGLE_CALLBACK_URL,
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET,
   },
 };

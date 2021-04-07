@@ -1,4 +1,4 @@
-import { OAuth } from './oauth.js';
+import { OAuth } from '../oauth.js';
 import pkg from 'forge-apis';
 import { config } from '../../config.js';
 const { UserProfileApi, HubsApi, ProjectsApi, FoldersApi, ItemsApi } = pkg;
@@ -74,13 +74,7 @@ export const listProjects = async (req, res, next) => {
         case 'projects':
           // For a project, first we need the top/root folder
           const hubId = params[params.length - 3];
-          getFolders(
-            hubId,
-            resourceId /*project_id*/,
-            oauth.getClient(),
-            internalToken,
-            res
-          );
+          getFolders(hubId, resourceId /*project_id*/, oauth.getClient(), internalToken, res);
           break;
         case 'folders': {
           const projectId = params[params.length - 3];
@@ -95,13 +89,7 @@ export const listProjects = async (req, res, next) => {
         }
         case 'items': {
           const projectId = params[params.length - 3];
-          getVersions(
-            projectId,
-            resourceId /*item_id*/,
-            oauth.getClient(),
-            internalToken,
-            res
-          );
+          getVersions(projectId, resourceId /*item_id*/, oauth.getClient(), internalToken, res);
           break;
         }
       }
@@ -129,12 +117,7 @@ async function getHubs(oauthClient, credentials, res) {
             hubType = 'bim360Hubs';
             break;
         }
-        return createOutput(
-          hub.links.self.href,
-          hub.attributes.name,
-          hubType,
-          true
-        );
+        return createOutput(hub.links.self.href, hub.attributes.name, hubType, true);
       })
     );
   } catch (err) {
@@ -145,12 +128,7 @@ async function getHubs(oauthClient, credentials, res) {
 async function getProjects(hubId, oauthClient, credentials, res) {
   try {
     const projects = new ProjectsApi();
-    const data = await projects.getHubProjects(
-      hubId,
-      {},
-      oauthClient,
-      credentials
-    );
+    const data = await projects.getHubProjects(hubId, {}, oauthClient, credentials);
     res.json(
       data.body.data.map((project) => {
         let projectType = 'projects';
@@ -162,12 +140,7 @@ async function getProjects(hubId, oauthClient, credentials, res) {
             projectType = 'bim360projects';
             break;
         }
-        return createOutput(
-          project.links.self.href,
-          project.attributes.name,
-          projectType,
-          true
-        );
+        return createOutput(project.links.self.href, project.attributes.name, projectType, true);
       })
     );
   } catch (err) {
@@ -178,19 +151,12 @@ async function getProjects(hubId, oauthClient, credentials, res) {
 async function getFolders(hubId, projectId, oauthClient, credentials, res) {
   try {
     const projects = new ProjectsApi();
-    const folders = await projects.getProjectTopFolders(
-      hubId,
-      projectId,
-      oauthClient,
-      credentials
-    );
+    const folders = await projects.getProjectTopFolders(hubId, projectId, oauthClient, credentials);
     res.json(
       folders.body.data.map((item) => {
         return createOutput(
           item.links.self.href,
-          item.attributes.displayName == null
-            ? item.attributes.name
-            : item.attributes.displayName,
+          item.attributes.displayName == null ? item.attributes.name : item.attributes.displayName,
           item.type,
           true
         );
@@ -201,13 +167,7 @@ async function getFolders(hubId, projectId, oauthClient, credentials, res) {
   }
 }
 
-async function getFolderContents(
-  projectId,
-  folderId,
-  oauthClient,
-  credentials,
-  res
-) {
+async function getFolderContents(projectId, folderId, oauthClient, credentials, res) {
   try {
     const folders = new FoldersApi();
     const contents = await folders.getFolderContents(
@@ -218,10 +178,7 @@ async function getFolderContents(
       credentials
     );
     const treeNodes = contents.body.data.map((item) => {
-      var name =
-        item.attributes.name == null
-          ? item.attributes.displayName
-          : item.attributes.name;
+      var name = item.attributes.name == null ? item.attributes.displayName : item.attributes.name;
       if (name !== '') {
         // BIM 360 Items with no displayName also don't have storage, so not file to transfer
         return createOutput(item.links.self.href, name, item.type, true);
@@ -238,33 +195,19 @@ async function getFolderContents(
 async function getVersions(projectId, itemId, oauthClient, credentials, res) {
   try {
     const items = new ItemsApi();
-    const versions = await items.getItemVersions(
-      projectId,
-      itemId,
-      {},
-      oauthClient,
-      credentials
-    );
+    const versions = await items.getItemVersions(projectId, itemId, {}, oauthClient, credentials);
     res.json(
       versions.body.data.map((version) => {
-        const dateFormated = new Date(
-          version.attributes.lastModifiedTime
-        ).toLocaleString();
+        const dateFormated = new Date(version.attributes.lastModifiedTime).toLocaleString();
         const versionst = version.id.match(/^(.*)\?version=(\d+)$/)[2];
         const viewerUrn =
-          version.relationships != null &&
-          version.relationships.derivatives != null
+          version.relationships != null && version.relationships.derivatives != null
             ? version.relationships.derivatives.data.id
             : null;
         return createOutput(
           viewerUrn,
           decodeURI(
-            'v' +
-              versionst +
-              ': ' +
-              dateFormated +
-              ' by ' +
-              version.attributes.lastModifiedUserName
+            'v' + versionst + ': ' + dateFormated + ' by ' + version.attributes.lastModifiedUserName
           ),
           viewerUrn != null ? 'versions' : 'unsupported',
           false

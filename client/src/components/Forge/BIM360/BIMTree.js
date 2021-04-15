@@ -13,9 +13,10 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ClearIcon from '@material-ui/icons/Clear';
+import Loader from '../../Utils/Loader';
 
-const SERVER_URL = 'http://localhost:9001';
-// const SERVER_URL = 'https://bimwip.herokuapp.com';
+const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const useStyles = makeStyles((theme) => ({
   tree: {
@@ -23,22 +24,41 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
 }));
+
 const BIMTree = (props) => {
   const classes = useStyles();
 
   const [childNodes, setChildNodes] = useState(null);
   const [expanded, setExpanded] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { setUrn } = useContext(UrnContext);
 
-  const fetchChildNodesTest = async (nodeId) => {
+  const fetchChildNodes = async (nodeId) => {
+    if (nodeId.substring(0, 8) === 'https://') {
+      setIsLoading(true);
+    }
     const result = await axios.get(`${SERVER_URL}/api/forge/listProjects`, {
       withCredentials: true,
       params: {
         id: nodeId,
       },
     });
-    let tempTree = result.data;
+    let tempTree = '';
+
+    if (result.data.length > 0) {
+      tempTree = result.data;
+    } else {
+      tempTree = [
+        {
+          id: 'empty',
+          name: 'No Files',
+          type: 'none',
+          children: false,
+        },
+      ];
+    }
+    setIsLoading(false);
     return tempTree;
   };
 
@@ -47,54 +67,61 @@ const BIMTree = (props) => {
     setExpanded(nodes);
     if (expandingNodes[0]) {
       const childId = expandingNodes[0];
-      fetchChildNodesTest(childId).then((result) => {
-        if (result.statusCode !== 404) {
-          setChildNodes(
-            result.map((node) => {
-              // use cases for icons here
-              switch (node.type) {
-                case 'bim360projects':
-                  return (
-                    <BIMTree
-                      key={node.id}
-                      {...node}
-                      collapseIcon={<ExpandMoreIcon />}
-                      expandIcon={<ChevronRightIcon />}
-                    />
-                  );
-                case 'items':
-                  return <BIMTree key={node.id} {...node} icon={<InsertDriveFileIcon />} />;
-                case 'versions':
-                  return (
-                    <BIMTree
-                      key={node.id}
-                      {...node}
-                      icon={<WatchLaterIcon />}
-                      // set the urn
-                      handleOnClick={() => {
-                        console.log(node.id);
-                        setUrn(node.id);
-                      }}
-                    />
-                  );
-                case 'folders':
-                  return (
-                    <BIMTree
-                      key={node.id}
-                      {...node}
-                      // icon={<FolderIcon />}
-                      collapseIcon={<FolderOpenIcon />}
-                      expandIcon={<FolderIcon />}
-                    />
-                  );
-                case 'unsupported':
-                  return <BIMTree key={node.id} {...node} icon={<RemoveCircleIcon />} />;
-                default:
-                  return <BIMTree key={node.id} {...node} />;
-              }
-            })
-          );
-        }
+      fetchChildNodes(childId).then((result) => {
+        setChildNodes(
+          result.map((node) => {
+            // use cases for icons here
+            switch (node.type) {
+              case 'bim360projects':
+                return (
+                  <BIMTree
+                    key={node.id}
+                    {...node}
+                    collapseIcon={<ExpandMoreIcon />}
+                    expandIcon={<ChevronRightIcon />}
+                  />
+                );
+              case 'items':
+                return <BIMTree key={node.id} {...node} icon={<InsertDriveFileIcon />} />;
+              case 'versions':
+                return (
+                  <BIMTree
+                    key={node.id}
+                    {...node}
+                    icon={<WatchLaterIcon />}
+                    // set the urn
+                    handleOnClick={() => {
+                      console.log(node.id);
+                      setUrn(node.id);
+                    }}
+                  />
+                );
+              case 'folders':
+                return (
+                  <BIMTree
+                    key={node.id}
+                    {...node}
+                    // icon={<FolderIcon />}
+                    collapseIcon={<FolderOpenIcon />}
+                    expandIcon={<FolderIcon />}
+                  />
+                );
+              case 'unsupported':
+                return (
+                  <BIMTree
+                    key={node.id}
+                    {...node}
+                    icon={<RemoveCircleIcon />}
+                    disableSelection={true}
+                  />
+                );
+              case 'none':
+                return <BIMTree key={node.id} {...node} disable={true} icon={<ClearIcon />} />;
+              default:
+                return <BIMTree key={node.id} {...node} name='empty' />;
+            }
+          })
+        );
       });
     }
   };
@@ -115,7 +142,7 @@ const BIMTree = (props) => {
         expandIcon={props.expandIcon}
         onLabelClick={props.handleOnClick}
       >
-        {childNodes || [<div key='stub' />]}
+        {!isLoading ? childNodes || [<div key='stub' />] : <Loader />}
       </TreeItem>
     </TreeView>
   );

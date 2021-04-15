@@ -11,6 +11,7 @@ import theme from './theme';
 import useStyles from './styles';
 import ForbiddenCity from './components/ForbiddenCity/ForbiddenCity';
 import GDrive from './components/GDrive/GDrive';
+import QuantityTakeOff from './components/QuantityTakeOff/QuantityTakeOff';
 
 const App = () => {
   const classes = useStyles();
@@ -28,6 +29,7 @@ const App = () => {
               <Route path='/powerBI' exact component={PowerBI} />
               <Route path='/forbiddenCity' exact component={ForbiddenCity} />
               <Route path='/gdrive' exact component={GDrive} />
+              <Route path='/qto' exact component={QuantityTakeOff} />
             </Switch>
           </Container>
         </BrowserRouter>

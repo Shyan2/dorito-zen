@@ -9,7 +9,11 @@ import {
   getGDrive,
 } from '../../controllers/google.js';
 
-import { sendToTranslationRoute } from '../../controllers/forgeGoogle.js';
+import {
+  sendToTranslationRoute,
+  isTranslated,
+  uploadAndTranslate,
+} from '../../controllers/forgeGoogle.js';
 
 const router = express.Router();
 
@@ -22,5 +26,7 @@ router.get('/profile', getUserProfile);
 router.get('/gdrive', getGDrive);
 
 router.post('/sendToTranslation', sendToTranslationRoute);
+router.post('/isTranslated', isTranslated);
+router.post('/uploadAndTranslate', uploadAndTranslate);
 
 export default router;

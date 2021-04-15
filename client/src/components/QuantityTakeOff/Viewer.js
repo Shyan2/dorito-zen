@@ -6,7 +6,7 @@ const AV = Autodesk.Viewing;
 
 const Viewer = (props) => {
   const [urn, setUrn] = useState(
-    'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6d3NwX2dlbmVyYWwvJUU1JThGJUIwJUU1JThDJTk3JUU4JUJCJThBJUU3JUFCJTk5JUU4JUJFJUE4JUU1JTg1JUFDJUU1JUFFJUE0LnJ2dA=='
+    'dXJuOmFkc2sud2lwcHJvZDpmcy5maWxlOnZmLkxvdXhtNzk0U3dDWGhrcXB1MEZKRVE_dmVyc2lvbj0xMTE'
   );
 
   useEffect(() => {
@@ -64,7 +64,8 @@ const Viewer = (props) => {
   const loadModel = (viewer, documentId) => {
     const onDocumentLoadSuccess = (viewerDocument) => {
       // viewerDocument is an instance of Autodesk.Viewing.Document
-      const defaultModel = viewerDocument.getRoot().getDefaultGeometry(true);
+      // const defaultModel = viewerDocument.getRoot().getDefaultGeometry(true); // does not load links
+      const defaultModel = viewerDocument.getRoot().getDefaultGeometry();
       viewer.loadDocumentNode(viewerDocument, defaultModel, {
         keepCurrentModels: true,
       });
@@ -92,7 +93,7 @@ const Viewer = (props) => {
     };
   }, []);
 
-  return <div id='forbiddenViewer' ref={viewerDomRef}></div>;
+  return <div id='quantityViewer' ref={viewerDomRef}></div>;
 };
 
 export default Viewer;

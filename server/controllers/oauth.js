@@ -79,15 +79,15 @@ class OAuth {
   }
 
   // GOOGLE TOKENS
-  getGoogleToken = async () => {
-    console.log('this._session from getGoogleToken: ', this._session);
+  getGoogleToken = () => {
+    // console.log('this._session from getGoogleToken: ', this._session);
     return this._session.googletoken;
   };
 
   setGoogleToken = (token) => {
     // console.log('Setting token! ', token);
     this._session.googletoken = token;
-    console.log(this._session);
+    // console.log(this._session);
   };
 
   isGoogleAuthorized = () => {

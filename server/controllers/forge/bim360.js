@@ -4,13 +4,18 @@ import { config } from '../../config.js';
 const { UserProfileApi, HubsApi, ProjectsApi, FoldersApi, ItemsApi } = pkg;
 const WSP_HUB_ID = 'b.8a331102-468b-4ecd-a5c3-64c7b5c855ab';
 
+// const FRONT_URL = 'https://quizzical-borg-e385b3.netlify.app';
+// const FRONT_URL = 'http://104.155.232.74/WSP_HNCB';
+// const FRONT_URL = 'http://localhost:3000';
+const FRONT_URL = config.front.url;
+
 export const forgeCallbackRoute = async (req, res) => {
   const { code } = req.query;
   const oauth = new OAuth(req.session);
 
   try {
     await oauth.setCode(code);
-    res.redirect('http://localhost:3000/models');
+    res.redirect(`${FRONT_URL}`); // /models
   } catch (error) {
     res.status(400).json({ message: error });
   }
@@ -49,6 +54,7 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
+// api/forge/listProjects
 export const listProjects = async (req, res, next) => {
   const href = decodeURIComponent(req.query.id);
 
@@ -203,13 +209,13 @@ async function getVersions(projectId, itemId, oauthClient, credentials, res) {
         const viewerUrn =
           version.relationships != null && version.relationships.derivatives != null
             ? version.relationships.derivatives.data.id
-            : null;
+            : 'NA';
         return createOutput(
           viewerUrn,
           decodeURI(
             'v' + versionst + ': ' + dateFormated + ' by ' + version.attributes.lastModifiedUserName
           ),
-          viewerUrn != null ? 'versions' : 'unsupported',
+          viewerUrn !== 'NA' ? 'versions' : 'unsupported',
           false
         );
       })

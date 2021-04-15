@@ -1,6 +1,10 @@
 import { OAuth } from './oauth.js';
 import { config } from '../config.js';
 
+// const FRONT_URL = 'https://quizzical-borg-e385b3.netlify.app';
+// const FRONT_URL = 'http://localhost:3000';
+const FRONT_URL = config.front.url;
+
 import { google } from 'googleapis';
 var OAuth2 = google.auth.OAuth2;
 var oauth2Client = new OAuth2(
@@ -32,13 +36,12 @@ export const googleCallbackRoute = async (req, res) => {
 
   const oauth = new OAuth(req.session);
   oauth.setGoogleToken(tokens.access_token);
-
-  res.redirect('http://localhost:3000/gdrive');
+  res.redirect(`${FRONT_URL}`); // /gdrive
 };
 
 export const googleLogout = async (req, res) => {
   req.session = null;
-  res.redirect('http://localhost:3000');
+  res.redirect(`${FRONT_URL}`);
 };
 
 export const isAuthorized = async (req, res) => {
@@ -48,18 +51,19 @@ export const isAuthorized = async (req, res) => {
 
 export const getUserProfile = async (req, res) => {
   try {
-    console.log('getUserProfile function entered!');
-
     const tokenSession = new OAuth(req.session);
 
     oauth2Client.setCredentials({
-      access_token: tokenSession.getGoogleToken(),
+      access_token: await tokenSession.getGoogleToken(),
     });
+
+    if (!oauth2Client.credentials.access_token) {
+      return res.status(400).json({ message: 'Invalid credentials.' });
+    }
 
     const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
 
     const userinfo = await oauth2.userinfo.get();
-    console.log(userinfo.data);
 
     const returnObject = {
       fullName: userinfo.data.name,
@@ -81,9 +85,8 @@ export const getGDrive = async (req, res) => {
     res.status(401).end('Please Google login first');
     return;
   }
-
   oauth2Client.setCredentials({
-    access_token: tokenSession.getGoogleToken(),
+    access_token: await tokenSession.getGoogleToken(),
   });
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 

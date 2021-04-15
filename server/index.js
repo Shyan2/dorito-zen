@@ -13,14 +13,14 @@ const app = express();
 dotenv.config();
 
 app.use(cors({ credentials: true, origin: true }));
-app.use(express.json({ limit: '30mb', extended: true }));
-app.use(express.urlencoded({ limit: '30mb', extended: true }));
+app.use(express.json({ limit: '50mb', extended: true }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.set('trust proxy', 1);
 app.use(
   cookieSession({
     // secure: true, // 'false' for Heroku (true?)
-    // sameSite: 'none', // 'none' for Heroku
+    // sameSite: 'none', // 'none' for Heroku, remove for localhost
     name: 'forge_session',
     keys: ['forge_secure_key'],
     resave: false,

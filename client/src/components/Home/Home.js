@@ -3,6 +3,7 @@ import { Container, Grow, Grid } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { getToken } from '../../actions/forge';
 import MyServices from './MyServices/MyServices';
+import ForgeAuth from './ForgeAuth';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -29,7 +30,12 @@ const Home = () => {
   return (
     <Grow in>
       <Container>
-        <MyServices />
+        <Grid item>
+          <ForgeAuth />
+        </Grid>
+        <Grid item>
+          <MyServices />
+        </Grid>
       </Container>
     </Grow>
   );

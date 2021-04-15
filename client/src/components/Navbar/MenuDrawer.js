@@ -14,6 +14,7 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import SettingsIcon from '@material-ui/icons/Settings';
 import BlockIcon from '@material-ui/icons/Block';
 import FolderIcon from '@material-ui/icons/Folder';
+import HomeIcon from '@material-ui/icons/Home';
 
 import { Link } from 'react-router-dom';
 
@@ -40,7 +41,7 @@ const MenuDrawer = ({ open }) => {
       <List>
         <ListItem button key='1' component={Link} to='/'>
           <ListItemIcon>
-            <DashboardIcon />
+            <HomeIcon />
           </ListItemIcon>
           <ListItemText>Dashboard</ListItemText>
         </ListItem>
@@ -54,7 +55,7 @@ const MenuDrawer = ({ open }) => {
 
         <ListItem button key='3' component={Link} to='/powerBI'>
           <ListItemIcon>
-            <BarChartIcon />
+            <DashboardIcon />
           </ListItemIcon>
           <ListItemText>PowerBI</ListItemText>
         </ListItem>
@@ -71,6 +72,13 @@ const MenuDrawer = ({ open }) => {
             <FolderIcon />
           </ListItemIcon>
           <ListItemText>GDrive</ListItemText>
+        </ListItem>
+
+        <ListItem button key='6' component={Link} to='/qto'>
+          <ListItemIcon>
+            <BarChartIcon />
+          </ListItemIcon>
+          <ListItemText>QTO</ListItemText>
         </ListItem>
       </List>
 

@@ -11,9 +11,16 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import FolderIcon from '@material-ui/icons/Folder';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import VideocamIcon from '@material-ui/icons/Videocam';
+
+import revitLogo from '../../../assets/icons/Autodesk Revit_16.png';
+import navisLogo from '../../../assets/icons/Autodesk-Navisworks-icon_16.png';
 
 import Loader from '../../Utils/Loader';
 import BIM360 from '../BIM360/BIM360';
+// const SERVER_URL = 'https://my-forge-server.herokuapp.com';
+// const SERVER_URL = 'http://localhost:9001';
+const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const FileTree = () => {
   const classes = useStyles();
@@ -38,15 +45,11 @@ const FileTree = () => {
     setIsLoading(true);
     const getTree = async () => {
       let returnArray = [];
-      const result = await axios.get(
-        // 'https://bimwip.herokuapp.com/api/forge/oss/buckets'
-        'http://localhost:9001/api/forge/buckets'
-      );
+      const result = await axios.get(`${SERVER_URL}/api/forge/buckets`);
 
       for (let i = 0; i < result.data.length; i++) {
         const childrenResult = await axios.get(
-          // `https://bimwip.herokuapp.com/api/forge/oss/buckets/?id=${result.data[i].id}`
-          `http://localhost:9001/api/forge/buckets/?id=${result.data[i].id}`
+          `${SERVER_URL}/api/forge/buckets/?id=${result.data[i].id}`
         );
 
         let returnObject = {
@@ -62,11 +65,21 @@ const FileTree = () => {
     getTree();
   }, []);
 
-  const selectIcon = (hasChildren) => {
-    if (hasChildren) {
+  const selectIcon = (nodes) => {
+    if (nodes.children) {
       return <FolderIcon />;
     } else {
-      return <InsertDriveFileIcon />;
+      const fileType = nodes.text.split('.').pop();
+      switch (fileType) {
+        case 'rvt':
+          return <img src={revitLogo} alt='revitLogo' />;
+        case 'mp4':
+          return <VideocamIcon />;
+        case 'nwd':
+          return <img src={navisLogo} alt='navisLogo' />;
+        default:
+          return <InsertDriveFileIcon />;
+      }
     }
   };
 
@@ -74,8 +87,9 @@ const FileTree = () => {
     <TreeItem
       key={nodes.id}
       nodeId={nodes.id}
-      label={nodes.text}
-      icon={selectIcon(nodes.children)}
+      // label={nodes.text}
+      label={nodes.text.split('.')[0]}
+      icon={selectIcon(nodes)}
       onClick={() => {
         if (nodes.text === '錦和運動公園停車場_動畫_20210304.mp4') {
           console.log('Is video!');

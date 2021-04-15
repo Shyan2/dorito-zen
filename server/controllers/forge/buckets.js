@@ -11,6 +11,7 @@ export const getToken2 = async (req, res) => {
 };
 
 // uses internal token
+// /api/forge/buckets
 export const getBuckets = async (req, res) => {
   const token = await getInternalTokenTwoLegged();
   const bucket_name = req.query.id;

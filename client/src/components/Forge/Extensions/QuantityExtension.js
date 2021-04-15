@@ -22,6 +22,7 @@ const QuantityExtension = () => {
 
     var qt_btn = new Autodesk.Viewing.UI.Button('quantityExtensionIcon');
     qt_btn.onClick = () => {
+      console.log('QTO clicked!');
       const getAllLeafComponents = (callback) => {
         viewer.getObjectTree(function (tree) {
           let leaves = [];
@@ -39,7 +40,7 @@ const QuantityExtension = () => {
       };
       getAllLeafComponents((dbIds) => {
         // prevent OOM
-        let reducedDbIds = dbIds.slice(0, 70000);
+        let reducedDbIds = dbIds.slice(0, 20000);
 
         //const filteredProps = ['PropertyNameA', 'PropertyNameB'];
         viewer.model.getBulkProperties(reducedDbIds, (null, true), (items) => {

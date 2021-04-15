@@ -7,8 +7,10 @@ import { Container, Grid, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-const SERVER_URL = 'http://localhost:9001';
+// const SERVER_URL = 'http://localhost:9001';
 // const SERVER_URL = 'https://bimwip.herokuapp.com';
+// const SERVER_URL = 'https://my-forge-server.herokuapp.com';
+const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -147,7 +149,7 @@ const BIM360 = () => {
             </Button>
           </Grid>
           <Grid item sm={12}>
-            <BIMTree id={linkRoute} name='Root' />
+            <BIMTree id={linkRoute} name='WSP' />
           </Grid>
         </Grid>
       )}

@@ -24,6 +24,13 @@ body {
   position: relative;
   padding: 0 !important;
 }
+#quantityViewer {
+  width: 100%;
+  height: calc(100vh - 48px);
+  position: relative;
+  padding: 0 !important;
+}
+
 .modelSummaryExtensionIcon {
   background-image: url(https://github.com/encharm/Font-Awesome-SVG-PNG/raw/master/white/png/24/dashboard.png);
   background-size: 24px;

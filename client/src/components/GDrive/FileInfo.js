@@ -108,6 +108,7 @@ const FileInfo = () => {
   };
 
   const uploadAndTranslate = async () => {
+    console.log(selectedFile);
     try {
       const result = await axios(`${SERVER_URL}/api/google/uploadAndTranslate`, {
         method: 'post',

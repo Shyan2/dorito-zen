@@ -31,6 +31,17 @@ body {
   padding: 0 !important;
 }
 
+#toolContainer {
+  z-index: 2;
+  position: absolute;
+  top: 100px;
+  left: 80px;
+  background-color: #373737;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
 .modelSummaryExtensionIcon {
   background-image: url(https://github.com/encharm/Font-Awesome-SVG-PNG/raw/master/white/png/24/dashboard.png);
   background-size: 24px;

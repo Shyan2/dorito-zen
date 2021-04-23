@@ -15,6 +15,11 @@ var oauth2Client = new OAuth2(
 
 export const getGoogleUrl = async (req, res) => {
   var scopes = [
+    /// TEST
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/drive.metadata',
+    // END TEST
     'https://www.googleapis.com/auth/drive.readonly',
     'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/userinfo.email',
@@ -35,6 +40,7 @@ export const googleCallbackRoute = async (req, res) => {
   oauth2Client.setCredentials(tokens);
 
   const oauth = new OAuth(req.session);
+  console.log(tokens);
   oauth.setGoogleToken(tokens.access_token);
   res.redirect(`${FRONT_URL}`); // /gdrive
 };
@@ -109,11 +115,16 @@ export const getGDrive = async (req, res) => {
 function drivePage(res, drive, folderId, npToken, first) {
   drive.files.list(
     {
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+      includeTeamDriveItems: true,
       pageSize: 1000,
       maxResults: 1000,
+      corpora: 'allDrives',
       q:
         (folderId === '#' ? "'root' in parents" : "'" + folderId + "' in parents") +
         ' and trashed = false',
+
       // fields: '*',
       fields:
         'nextPageToken, files(id, name, mimeType, iconLink, webViewLink, version, fileExtension)',
@@ -123,7 +134,7 @@ function drivePage(res, drive, folderId, npToken, first) {
     },
     function (err, lst) {
       if (err) console.log(err);
-
+      console.log(lst.data);
       var items = lst.data.files;
       // console.log(lst.data);
       items.forEach(function (item) {
@@ -136,7 +147,6 @@ function drivePage(res, drive, folderId, npToken, first) {
           webViewLink: item.webViewLink,
           sharingUser: item.sharingUser,
           fileExtension: item.fileExtension,
-          // children: item.mimeType === 'application/vnd.google-apps.folder',
           children: item.mimeType === 'application/vnd.google-apps.folder',
         };
         res.write((first ? '' : ',') + JSON.stringify(treeItem));

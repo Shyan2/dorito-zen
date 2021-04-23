@@ -73,7 +73,7 @@ export const sendToTranslationRoute = async (req, res) => {
         const objects = new ObjectsApi();
         const postBuckets = new PostBucketsPayload();
         postBuckets.bucketKey = ossBucketKey;
-        postBuckets.policyKey = 'transient'; // expires in 24h
+        postBuckets.policyKey = 'transient'; // files expire in 24h
 
         buckets
           .createBucket(postBuckets, {}, null, tokenInternal)
@@ -85,6 +85,7 @@ export const sendToTranslationRoute = async (req, res) => {
               {
                 fileId: googleFileId,
                 fields: 'name, fileExtension, version',
+                supportsAllDrives: true,
               },
               function (err, fileInfo) {
                 if (err) console.log(err);
@@ -194,6 +195,7 @@ export const sendToTranslationRoute = async (req, res) => {
 };
 
 export const isTranslated = async (req, res) => {
+  console.log('entered is translated!');
   try {
     let bucketExistsBool = false;
     let objectTranslatedBool = false;
@@ -223,9 +225,15 @@ export const isTranslated = async (req, res) => {
         peopleResult.data.resourceName.split('/')[1]
       ).toLowerCase();
 
+    const bucketsApi = new BucketsApi();
+    const postBuckets = new PostBucketsPayload();
+    postBuckets.bucketKey = bucketKey;
+    postBuckets.policyKey = 'transient'; // expires in 24h
+
+    // check if bucket exists, else create
+
     // now check if the file exists in the bucket (first check if bucket even exists)
     // make sure the names follow the naming rules
-
     const buckets = await axios.get('https://developer.api.autodesk.com/oss/v2/buckets', {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
@@ -239,6 +247,11 @@ export const isTranslated = async (req, res) => {
         bucketExistsBool = true;
       }
     });
+    // TO DO: change to .includes or something
+    if (!bucketExistsBool) {
+      const createBucketResult = await bucketsApi.createBucket(postBuckets, {}, null, token);
+      console.log(createBucketResult);
+    }
 
     // check if file exists
 
@@ -246,6 +259,7 @@ export const isTranslated = async (req, res) => {
     const driveFileResult = await drive.files.get({
       fileId: googleFileId,
       fields: 'name, fileExtension, version',
+      supportsAllDrives: true,
     });
 
     const driveFileName =
@@ -309,6 +323,7 @@ export const isTranslated = async (req, res) => {
 export const uploadAndTranslate = async (req, res) => {
   // IF file does not exist, upload
   // IF file exists, translate
+  console.log(req.body.googlefile);
   try {
     const googleFileId = req.body.googlefile;
 
@@ -334,21 +349,24 @@ export const uploadAndTranslate = async (req, res) => {
         peopleResult.data.resourceName.split('/')[1]
       ).toLowerCase();
 
+    //check if bucket exists, if not create it
+    // or just create
+
     // check if file exists
     // get the file name from gdrive
     const driveFileResult = await drive.files.get({
       fileId: googleFileId,
       fields: 'name, fileExtension, version',
+      supportsAllDrives: true,
     });
 
     const driveFileName =
       googleFileId + '_V' + driveFileResult.data.version + '_' + driveFileResult.data.name;
     console.log('File name: ' + driveFileName);
 
-    const tokenInternal = await getInternalTokenTwoLegged();
+    // const tokenInternal = await getInternalTokenTwoLegged();
 
     // upload driveFileName into the bucketKey
-    const objects = new ObjectsApi();
     const googleToken = tokenSession.getGoogleToken();
     console.log('getting file from google...');
 
@@ -358,11 +376,16 @@ export const uploadAndTranslate = async (req, res) => {
     // });
     // console.log(driveResult.data);
     const driveResult = await axios({
-      url: 'https://www.googleapis.com/drive/v2/files/' + googleFileId + '?alt=media',
+      url:
+        'https://www.googleapis.com/drive/v3/files/' +
+        googleFileId +
+        '?alt=media&supportsAllDrives=true',
+
       method: 'get',
       headers: {
         Authorization: 'Bearer ' + googleToken,
       },
+      // supportsAllDrives: true,
       responseType: 'arraybuffer',
     });
     // console.log(driveResult);
@@ -393,12 +416,7 @@ export const uploadAndTranslate = async (req, res) => {
     console.log('translating...');
     const ossUrn = uploadResult.data.objectId.toBase64();
     const derivative = new DerivativesApi();
-    const derivativeResult = await derivative.translate(
-      translateData(ossUrn),
-      {},
-      null,
-      tokenInternal
-    );
+    const derivativeResult = await derivative.translate(translateData(ossUrn), {}, null, token);
     console.log(derivativeResult);
     console.log('finished!');
   } catch (error) {

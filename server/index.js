@@ -20,7 +20,7 @@ app.set('trust proxy', 1);
 app.use(
   cookieSession({
     // secure: true, // 'false' for Heroku (true?)
-    // sameSite: 'none', // 'none' for Heroku, remove for localhost
+    sameSite: 'none', // 'none' for Heroku, remove for localhost
     name: 'forge_session',
     keys: ['forge_secure_key'],
     resave: false,

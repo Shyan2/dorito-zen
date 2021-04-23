@@ -134,8 +134,26 @@ const GDrive = () => {
                         <Paper className={classes.subPaper} variant='outlined' width='1'>
                           <Grid item sm={12}>
                             <GDriveTree
+                              // id={'0AGXMisIKi6EeUk9PVA'}
+                              // id={'#'}
                               id={'#'}
-                              name='Root'
+                              name='My Drive'
+                              icon={
+                                'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.folder'
+                              }
+                            />
+                            <GDriveTree
+                              // id={'0AGXMisIKi6EeUk9PVA'}
+                              // id={'#'}
+                              id={'0AA59OTT24tAYUk9PVA'}
+                              name='Drawing/Specification Database'
+                              icon={
+                                'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.folder'
+                              }
+                            />
+                            <GDriveTree
+                              id={'0AGXMisIKi6EeUk9PVA'}
+                              name='CHG5 WSP'
                               icon={
                                 'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.folder'
                               }

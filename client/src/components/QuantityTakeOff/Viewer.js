@@ -1,6 +1,7 @@
 /* global Autodesk */
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import QuantityExtension from './Extensions/QuantityExtension';
 
 const AV = Autodesk.Viewing;
 
@@ -72,6 +73,7 @@ const Viewer = (props) => {
 
       // since ghosting is heavy, turn off
       viewer.prefs.set('ghosting', false);
+      // viewer.prefs.set('ghosting', true);
     };
 
     const onDocumentLoadFailure = () => {
@@ -93,7 +95,11 @@ const Viewer = (props) => {
     };
   }, []);
 
-  return <div id='quantityViewer' ref={viewerDomRef}></div>;
+  return (
+    <>
+      <div id='quantityViewer' ref={viewerDomRef}></div> <QuantityExtension />
+    </>
+  );
 };
 
 export default Viewer;

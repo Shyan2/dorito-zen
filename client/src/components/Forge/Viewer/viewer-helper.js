@@ -16,7 +16,7 @@ const initializeViewer = async (urn, token) => {
 
   var viewerContainer = document.getElementById('viewerContainer');
   var viewer = new Autodesk.Viewing.Private.GuiViewer3D(viewerContainer, {
-    extensions: ['QuantityExtension'],
+    extensions: ['QuantityExtension', 'Autodesk.DocumentBrowser'],
   });
 
   Autodesk.Viewing.Initializer(viewerOptions, () => {

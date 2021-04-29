@@ -81,13 +81,14 @@ const GDrive = () => {
                   <Typography className={classes.titleTypography} gutterBottom variant='h5'>
                     GDrive Integration
                   </Typography>
+                  &nbsp;
                   <Container maxWidth={false}>
                     {!userInfo ? (
                       <Grid container align='center' justify='center' direction='column'>
                         <Grid item>
                           <Button
                             variant='outlined'
-                            color='default'
+                            color='secondary'
                             href={loginLink}
                             startIcon={
                               <Avatar

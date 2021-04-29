@@ -45,7 +45,7 @@ const BIMTree = (props) => {
       },
     });
     let tempTree = '';
-
+    console.log(result);
     if (result.data.length > 0) {
       tempTree = result.data;
     } else {
@@ -72,6 +72,15 @@ const BIMTree = (props) => {
           result.map((node) => {
             // use cases for icons here
             switch (node.type) {
+              case 'bim360Hubs':
+                return (
+                  <BIMTree
+                    key={node.id}
+                    {...node}
+                    collapseIcon={<ExpandMoreIcon />}
+                    expandIcon={<ChevronRightIcon />}
+                  />
+                );
               case 'bim360projects':
                 return (
                   <BIMTree

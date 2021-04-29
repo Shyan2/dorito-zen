@@ -8,6 +8,7 @@ import userRoutes from './routes/users.js';
 import bucketRoutes from './routes/forge/buckets.js';
 import bim360Routes from './routes/forge/bim360.js';
 import googleRoutes from './routes/google/google.js';
+import issueRoutes from './routes/issues/issues.js';
 
 const app = express();
 dotenv.config();
@@ -20,7 +21,7 @@ app.set('trust proxy', 1);
 app.use(
   cookieSession({
     // secure: true, // 'false' for Heroku (true?)
-    sameSite: 'none', // 'none' for Heroku, remove for localhost
+    // sameSite: 'none', // 'none' for Heroku, remove for localhost
     name: 'forge_session',
     keys: ['forge_secure_key'],
     resave: false,
@@ -33,6 +34,7 @@ app.use('/user', userRoutes);
 app.use('/api/forge', bucketRoutes);
 app.use('/api/forge', bim360Routes);
 app.use('/api/google', googleRoutes);
+app.use('/issues', issueRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');

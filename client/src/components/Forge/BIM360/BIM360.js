@@ -85,8 +85,8 @@ const BIM360 = () => {
     }
   };
 
-  const linkRoute =
-    'https://developer.api.autodesk.com/project/v1/hubs/b.8a331102-468b-4ecd-a5c3-64c7b5c855ab'; // hub folder ('#')
+  const linkRoute = '#';
+  // 'https://developer.api.autodesk.com/project/v1/hubs/b.8a331102-468b-4ecd-a5c3-64c7b5c855ab'; // hub folder ('#')
 
   return (
     <Container maxWidth={false}>
@@ -149,7 +149,7 @@ const BIM360 = () => {
             </Button>
           </Grid>
           <Grid item sm={12}>
-            <BIMTree id={linkRoute} name='WSP' />
+            <BIMTree id={linkRoute} name='Root' />
           </Grid>
         </Grid>
       )}

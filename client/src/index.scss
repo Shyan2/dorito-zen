@@ -31,6 +31,13 @@ body {
   padding: 0 !important;
 }
 
+#issueViewer {
+  width: 100%;
+  height: calc(100vh - 150px);
+  position: relative;
+  padding: 0 !important;
+}
+
 #toolContainer {
   z-index: 2;
   position: absolute;
@@ -67,4 +74,17 @@ body {
   background-size: 80%;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.show-hide-issues-button {
+  background-image: url('./assets/icons/visibility.svg');
+  background-size: contain;
+  background-size: 80%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.create-new-issue-button {
+  background-image: url('./assets/icons/play_button.svg');
+  background-size: contain;
 }

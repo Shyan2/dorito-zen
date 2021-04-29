@@ -12,6 +12,7 @@ import useStyles from './styles';
 import ForbiddenCity from './components/ForbiddenCity/ForbiddenCity';
 import GDrive from './components/GDrive/GDrive';
 import QuantityTakeOff from './components/QuantityTakeOff/QuantityTakeOff';
+import Issues from './components/Issues/Issues';
 
 const App = () => {
   const classes = useStyles();
@@ -30,6 +31,7 @@ const App = () => {
               <Route path='/forbiddenCity' exact component={ForbiddenCity} />
               <Route path='/gdrive' exact component={GDrive} />
               <Route path='/qto' exact component={QuantityTakeOff} />
+              <Route path='/issues' exact component={Issues} />
             </Switch>
           </Container>
         </BrowserRouter>

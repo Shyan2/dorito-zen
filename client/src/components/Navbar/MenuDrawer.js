@@ -15,6 +15,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import BlockIcon from '@material-ui/icons/Block';
 import FolderIcon from '@material-ui/icons/Folder';
 import HomeIcon from '@material-ui/icons/Home';
+import WarningIcon from '@material-ui/icons/Warning';
 
 import { Link } from 'react-router-dom';
 
@@ -43,7 +44,7 @@ const MenuDrawer = ({ open }) => {
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>
-          <ListItemText>Dashboard</ListItemText>
+          <ListItemText>Home</ListItemText>
         </ListItem>
 
         <ListItem button key='2' component={Link} to='/models'>
@@ -79,6 +80,13 @@ const MenuDrawer = ({ open }) => {
             <BarChartIcon />
           </ListItemIcon>
           <ListItemText>QTO</ListItemText>
+        </ListItem>
+
+        <ListItem button key='7' component={Link} to='/issues'>
+          <ListItemIcon>
+            <WarningIcon />
+          </ListItemIcon>
+          <ListItemText>Issues</ListItemText>
         </ListItem>
       </List>
 

@@ -1,13 +1,15 @@
 /* global Autodesk */
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+// import QuantityExtension from './Extensions/QuantityExtension';
 
 const AV = Autodesk.Viewing;
 
 const Viewer = (props) => {
   const [urn, setUrn] = useState(
-    // 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6d3NwX2dlbmVyYWwvJUU1JThGJUIwJUU1JThDJTk3JUU4JUJCJThBJUU3JUFCJTk5JUU4JUJFJUE4JUU1JTg1JUFDJUU1JUFFJUE0LnJ2dA=='
-    'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6d3NwLW1haW4tb2ZmaWNlLyVFNSU4RiVCMCVFNSU4QyU5NyVFOCVCQiU4QSVFNyVBQiU5OSVFOCVCRSVBOCVFNSU4NSVBQyVFNSVBRSVBNC5ydnQ='
+    // 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6d3NwX2dlbmVyYWwvJUU1JThGJUIwJUU1JThDJTk3JUU4JUJCJThBJUU3JUFCJTk5JUU4JUJFJUE4JUU1JTg1JUFDJUU1JUFFJUE0LnJ2dA'
+    // 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6d3NwLW1haW4tb2ZmaWNlLyVFNSU4RiVCMCVFNSU4QyU5NyVFOCVCQiU4QSVFNyVBQiU5OSVFOCVCRSVBOCVFNSU4NSVBQyVFNSVBRSVBNC5ydnQ=' //main station
+    'dXJuOmFkc2sud2lwcHJvZDpmcy5maWxlOnZmLkxvdXhtNzk0U3dDWGhrcXB1MEZKRVE_dmVyc2lvbj0xMTE' // huanan 111
   );
 
   useEffect(() => {
@@ -42,6 +44,7 @@ const Viewer = (props) => {
 
     AV.Initializer(viewerOptions, async () => {
       const viewer = new Autodesk.Viewing.GuiViewer3D(viewerDomRef.current);
+      // const viewer = new Autodesk.Viewing.Viewer3D(viewerDomRef.current); //headless view
       viewerRef.current = viewer;
 
       const startedCode = viewer.start(undefined, undefined, undefined, undefined, viewerOptions);
@@ -65,13 +68,15 @@ const Viewer = (props) => {
   const loadModel = (viewer, documentId) => {
     const onDocumentLoadSuccess = (viewerDocument) => {
       // viewerDocument is an instance of Autodesk.Viewing.Document
-      const defaultModel = viewerDocument.getRoot().getDefaultGeometry(true);
+      // const defaultModel = viewerDocument.getRoot().getDefaultGeometry(true); // does not load links
+      const defaultModel = viewerDocument.getRoot().getDefaultGeometry();
       viewer.loadDocumentNode(viewerDocument, defaultModel, {
         keepCurrentModels: true,
       });
 
       // since ghosting is heavy, turn off
       viewer.prefs.set('ghosting', false);
+      // viewer.prefs.set('ghosting', true);
     };
 
     const onDocumentLoadFailure = () => {
@@ -93,7 +98,11 @@ const Viewer = (props) => {
     };
   }, []);
 
-  return <div id='forbiddenViewer' ref={viewerDomRef}></div>;
+  return (
+    <>
+      <div id='issueViewer' ref={viewerDomRef}></div>
+    </>
+  );
 };
 
 export default Viewer;

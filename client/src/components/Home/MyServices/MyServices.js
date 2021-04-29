@@ -14,6 +14,7 @@ const items = [
   { id: 3, name: 'Forbidden City Project', image: 'IMG', path: '/forbiddenCity' },
   { id: 4, name: 'GDrive Integration', image: 'IMG', path: '/gdrive' },
   { id: 5, name: 'Quantity Take Off POC', image: 'IMG', path: '/qto' },
+  { id: 6, name: 'Issues', image: 'IMG', path: '/issues' },
 ];
 
 const MyServices = () => {

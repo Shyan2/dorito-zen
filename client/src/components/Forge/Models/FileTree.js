@@ -18,8 +18,6 @@ import navisLogo from '../../../assets/icons/Autodesk-Navisworks-icon_16.png';
 
 import Loader from '../../Utils/Loader';
 import BIM360 from '../BIM360/BIM360';
-// const SERVER_URL = 'https://my-forge-server.herokuapp.com';
-// const SERVER_URL = 'http://localhost:9001';
 const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const FileTree = () => {
@@ -72,6 +70,7 @@ const FileTree = () => {
       const fileType = nodes.text.split('.').pop();
       switch (fileType) {
         case 'rvt':
+        case 'zip':
           return <img src={revitLogo} alt='revitLogo' />;
         case 'mp4':
           return <VideocamIcon />;
@@ -83,26 +82,31 @@ const FileTree = () => {
     }
   };
 
-  const renderTree = (nodes) => (
-    <TreeItem
-      key={nodes.id}
-      nodeId={nodes.id}
-      // label={nodes.text}
-      label={nodes.text.split('.')[0]}
-      icon={selectIcon(nodes)}
-      onClick={() => {
-        if (nodes.text === '錦和運動公園停車場_動畫_20210304.mp4') {
-          console.log('Is video!');
-          handleOpen();
-        } else if (!nodes.children) {
-          console.log(nodes);
-          setUrn(nodes.id);
-        }
-      }}
-    >
-      {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
-    </TreeItem>
-  );
+  const renderTree = (nodes) => {
+    if (nodes.text.length < 60) {
+      // dont show gdrive folders
+      return (
+        <TreeItem
+          key={nodes.id}
+          nodeId={nodes.id}
+          // label={nodes.text}
+          label={nodes.text.length > 50 ? '(private bucket)' : nodes.text.split('.')[0]}
+          icon={selectIcon(nodes)}
+          onClick={() => {
+            if (nodes.text === '錦和運動公園停車場_動畫_20210304.mp4') {
+              console.log('Is video!');
+              handleOpen();
+            } else if (!nodes.children) {
+              console.log(nodes);
+              setUrn(nodes.id);
+            }
+          }}
+        >
+          {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
+        </TreeItem>
+      );
+    }
+  };
 
   return (
     <Grow in>
@@ -115,16 +119,20 @@ const FileTree = () => {
         <Typography className={classes.typography} variant='h5' gutterBottom>
           Default
         </Typography>
-        <TreeView
-          className={classes.tree}
-          // TODO: Why doesnt the classses.tree work? It (the padding) is being overwritten by .MuiTreeView-root.
-          style={{ padding: '8px 24px' }}
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpanded={['root']}
-          defaultExpandIcon={<ChevronRightIcon />}
-        >
-          {isLoading ? <Loader /> : tree.map((item) => renderTree(item))}
-        </TreeView>
+        <Container maxWidth={false}>
+          <Grid item sm={12}>
+            <TreeView
+              className={classes.tree}
+              // TODO: Why doesnt the classses.tree work? It (the padding) is being overwritten by .MuiTreeView-root.
+              style={{ padding: '8px 0px' }}
+              defaultCollapseIcon={<ExpandMoreIcon />}
+              defaultExpanded={['root']}
+              defaultExpandIcon={<ChevronRightIcon />}
+            >
+              {isLoading ? <Loader /> : tree.map((item) => renderTree(item))}
+            </TreeView>
+          </Grid>
+        </Container>
       </Paper>
     </Grow>
   );

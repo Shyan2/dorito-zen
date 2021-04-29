@@ -96,7 +96,7 @@ export const sendToTranslationRoute = async (req, res) => {
                   // fileName + '.' + fileInfo.data.fileExtension;
                   // fileName;
                   googleFileId + '_V' + fileInfo.data.version + '_' + fileInfo.data.name;
-                console.log(fileName, ossObjectName);
+                // console.log(fileName, ossObjectName);
                 // at this point the bucket exists (either created or already there)
                 objects
                   .getObjects(ossBucketKey, { limit: 100 }, null, tokenInternal)
@@ -104,7 +104,7 @@ export const sendToTranslationRoute = async (req, res) => {
                     var alreadyTranslated = false;
                     var objectsInBucket = response.body.items;
 
-                    console.log(objectsInBucket);
+                    // console.log(objectsInBucket);
 
                     objectsInBucket.forEach(function (item) {
                       if (item.objectKey === ossObjectName) {
@@ -127,7 +127,7 @@ export const sendToTranslationRoute = async (req, res) => {
                       //     alt: 'media',
                       //   },
                       const googleToken = tokenSession.getGoogleToken();
-                      console.log(googleToken);
+                      // console.log(googleToken);
 
                       request(
                         {
@@ -203,7 +203,7 @@ export const isTranslated = async (req, res) => {
     console.log(googleFileId);
 
     const token = await getInternalTokenTwoLegged();
-    console.log(token);
+    // console.log(token);
     const tokenSession = new OAuth(req.session);
 
     oauth2Client.setCredentials({
@@ -242,7 +242,7 @@ export const isTranslated = async (req, res) => {
 
     buckets.data.items.forEach((bucket) => {
       if (bucket.bucketKey === bucketKey) {
-        console.log(bucket);
+        // console.log(bucket);
         console.log('bucket exists! bucketKey:' + bucketKey);
         bucketExistsBool = true;
       }
@@ -250,7 +250,7 @@ export const isTranslated = async (req, res) => {
     // TO DO: change to .includes or something
     if (!bucketExistsBool) {
       const createBucketResult = await bucketsApi.createBucket(postBuckets, {}, null, token);
-      console.log(createBucketResult);
+      // console.log(createBucketResult);
     }
 
     // check if file exists
@@ -280,7 +280,7 @@ export const isTranslated = async (req, res) => {
     let urn = '';
     objects.data.items.forEach((object) => {
       if (object.objectKey === driveFileName) {
-        console.log(object);
+        // console.log(object);
         objectTranslatedBool = true;
         urn = object.objectId.toBase64();
         console.log('object exists! urn: ' + urn);

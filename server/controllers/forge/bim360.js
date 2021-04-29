@@ -158,6 +158,7 @@ async function getFolders(hubId, projectId, oauthClient, credentials, res) {
   try {
     const projects = new ProjectsApi();
     const folders = await projects.getProjectTopFolders(hubId, projectId, oauthClient, credentials);
+    // sort the folders here?
     res.json(
       folders.body.data.map((item) => {
         return createOutput(

@@ -42,7 +42,7 @@ export const googleCallbackRoute = async (req, res) => {
   const oauth = new OAuth(req.session);
   console.log(tokens);
   oauth.setGoogleToken(tokens.access_token);
-  res.redirect(`${FRONT_URL}`); // /gdrive
+  res.redirect(`${FRONT_URL}/gdrive`); // /gdrive
 };
 
 export const googleLogout = async (req, res) => {
@@ -134,7 +134,7 @@ function drivePage(res, drive, folderId, npToken, first) {
     },
     function (err, lst) {
       if (err) console.log(err);
-      console.log(lst.data);
+      // console.log(lst.data);
       var items = lst.data.files;
       // console.log(lst.data);
       items.forEach(function (item) {

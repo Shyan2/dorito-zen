@@ -101,7 +101,7 @@ const CreateIssueForm = () => {
           type='submit'
           fullWidth
         >
-          Submit
+          Create Issue
         </Button>
         <Button variant='contained' color='secondary' size='small' onClick={clear} fullWidth>
           Clear

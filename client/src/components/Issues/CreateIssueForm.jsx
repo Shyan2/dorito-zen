@@ -9,21 +9,46 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import axios from 'axios';
 
-const CreateIssueForm = () => {
+const CreateIssueForm = ({ newCreatedElement }) => {
+  // console.log('updating create issue form');
+  // console.log(newCreatedElement);
   const classes = useStyles();
   const [issueData, setIssueData] = useState({
+    id: '',
     title: '',
     description: '',
     selectedFile: '',
     assignedTo: '',
+    xpos: '',
+    ypos: '',
+    zpos: '',
   });
+
+  useEffect(() => {
+    if (newCreatedElement !== {}) {
+      setIssueData({
+        id: '',
+        title: '',
+        description: '',
+        selectedFile: '',
+        assignedTo: '',
+        xpos: newCreatedElement?.position?.x,
+        ypos: newCreatedElement?.position?.y,
+        zpos: newCreatedElement?.position?.z,
+      });
+    }
+  }, [newCreatedElement]);
 
   const clear = () => {
     setIssueData({
+      id: '',
       title: '',
       description: '',
       selectedFile: '',
       assignedTo: '',
+      xpos: '',
+      ypos: '',
+      zpos: '',
     });
   };
 
@@ -46,6 +71,14 @@ const CreateIssueForm = () => {
         onSubmit={handleSubmit}
       >
         <Typography variant='h6'>Create a new Issue</Typography>
+        <TextField
+          name='id'
+          variant='outlined'
+          label='ID'
+          fullWidth
+          value={issueData.id}
+          onChange={(e) => setIssueData({ ...issueData, id: e.target.value })}
+        />
         <TextField
           name='title'
           variant='outlined'
@@ -70,28 +103,58 @@ const CreateIssueForm = () => {
           value={issueData.assignedTo}
           onChange={(e) => setIssueData({ ...issueData, assignedTo: e.target.value })}
         />
-        {/* <TextField
-          name='selectedFile'
+        <TextField
+          name='xpos'
           variant='outlined'
-          label='Selected File'
+          label='X'
           fullWidth
-          value={issueData.selectedFile}
-          onChange={(e) => setIssueData({ ...issueData, selectedFile: e.target.value })}
-        /> */}
+          value={issueData.xpos}
+          onChange={(e) => setIssueData({ ...issueData, xpos: e.target.value })}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <TextField
+          name='ypos'
+          variant='outlined'
+          label='Y'
+          fullWidth
+          value={issueData.ypos}
+          onChange={(e) => setIssueData({ ...issueData, ypos: e.target.value })}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <TextField
+          name='zpos'
+          variant='outlined'
+          label='Z'
+          fullWidth
+          value={issueData.zpos}
+          onChange={(e) => setIssueData({ ...issueData, zpos: e.target.value })}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
 
-        <Select
+        {/* <Select
           labelId='demo-simple-select-label'
           id='demo-simple-select'
           value={issueData.selectedFile}
+          fullWidth
           onChange={(e) => setIssueData({ ...issueData, selectedFile: e.target.value })}
         >
           <MenuItem value=''>
             <em>None</em>
           </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
-        </Select>
+          <MenuItem
+            value={
+              'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6d3NwLW1haW4tb2ZmaWNlLyVFNSU4RiVCMCVFNSU4QyU5NyVFOCVCQiU4QSVFNyVBQiU5OSVFOCVCRSVBOCVFNSU4NSVBQyVFNSVBRSVBNC5ydnQ'
+            }
+          >
+            Model 1
+          </MenuItem>
+        </Select> */}
 
         <Button
           className={classes.buttonSubmit}

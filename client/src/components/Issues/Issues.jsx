@@ -36,8 +36,11 @@ Autodesk.Viewing.theExtensionManager.registerExtension(
 const Issues = () => {
   const [issuesList, setIssuesList] = useState([
     {
+      _id: '123123123',
       id: '1',
       title: 'issue 1',
+      description: 'test iussue 1 desctription',
+      assignedTo: 'FROM REACT',
       position: {
         x: -15.0,
         y: -19.0,
@@ -45,8 +48,11 @@ const Issues = () => {
       },
     },
     {
+      _id: '198971832',
       id: '2',
       title: 'issue 2',
+      description: 'test description for issue 2',
+      assignedTo: 'FROM REACT',
       position: {
         x: -33.0,
         y: -32.0,
@@ -62,26 +68,50 @@ const Issues = () => {
   const [createIssueBool, setCreateIssueBool] = useState(false);
   const [hoveredDeviceInfo, setHoveredDeviceInfo] = useState({});
 
+  const [newCreatedElement, setNewCreatedElement] = useState({});
+  const [tempNewCreatedElement, setTempNewCreatedElement] = useState({});
+
   const dataVizExtRef = useRef(null);
   dataVizExtRef.current = dataVizExt;
 
   const issuesVisibilityHandler = () => {
     setIssuesVisible((prevIssuesVisible) => !prevIssuesVisible);
-    console.log(issuesVisible);
   };
 
   const createIssueHandler = () => {
     setCreateIssueBool((prevCreateIssueBool) => !prevCreateIssueBool);
   };
 
-  const issuesValue = useMemo(() => ({ issues, setIssues }), [issues, setIssues]);
+  const issuesValue = useMemo(() => ({ issuesList, setIssuesList }), [issuesList, setIssuesList]);
+
   // get issues
   useEffect(() => {
     getIssues();
   }, []);
 
+  const getIssues = async () => {
+    const issueResult = await axios.get('http://localhost:9001/issues');
+    // console.log(issueResult.data);
+    issueResult.data.map((issue) => {
+      const temp = {
+        _id: issue._id,
+        id: issue.id,
+        title: issue.title,
+        description: issue.description,
+        assignedTo: issue.assignedTo,
+        selectedFile: issue.selectedFile,
+        comments: issue.comments,
+        position: {
+          x: issue.xpos,
+          y: issue.ypos,
+          z: issue.zpos,
+        },
+      };
+      setIssuesList((issuesList) => [...issuesList, temp]);
+    });
+  };
   const generateViewableData = async () => {
-    console.log(issuesList);
+    // console.log(issuesList);
     const dataVizExtn = Autodesk.DataVisualization.Core;
 
     // STYLES
@@ -98,23 +128,24 @@ const Issues = () => {
     viewableData.spriteSize = SpriteSize;
 
     issuesList.forEach((issue, index) => {
-      console.log(issue);
+      // console.log(issue);
       const dbId = 100 + index;
       // let style = styleMap[issue.type] || styleMap['default'];
-      const viewable = new dataVizExtn.SpriteViewable(issue.position, styleMap['default'], dbId);
-
-      viewable.title = issue.title;
-
-      viewableData.addViewable(viewable);
+      if (issue.position.x) {
+        const viewable = new dataVizExtn.SpriteViewable(issue.position, styleMap['default'], dbId);
+        viewable.title = issue.title;
+        viewable._id = issue._id;
+        viewable.id = issue.id;
+        viewable.title = issue.title;
+        viewable.description = issue.description;
+        viewable.assignedTo = issue.assignedTo;
+        viewable.selectedFile = issue.selectedFile;
+        viewable.comments = issue.comments;
+        viewableData.addViewable(viewable);
+      }
     });
     await viewableData.finish();
     return viewableData;
-  };
-
-  const getIssues = async () => {
-    const issueResult = await axios.get('http://localhost:9001/issues');
-    console.log(issueResult);
-    setIssues(issueResult.data);
   };
 
   const handleTabChange = (event, newValue) => {
@@ -147,10 +178,16 @@ const Issues = () => {
       let test = viewerImpl.hitTestViewport(vpVec, false);
       // console.log('Item clicked!');
       console.log(test);
+
+      const itemData = dataVizExt?.viewableData?.viewables.find((v) => v.dbId == event.dbId);
+      if (itemData) {
+        console.log(itemData);
+      }
     };
 
-    const onItemClickOut = async (event) => {
-      console.log('Clicked out! Creating a new issue pin.');
+    const onItemClickOut = (event) => {
+      // console.log('Clicked out! Creating a new issue pin.');
+      // setNewCreatedElement({});
       let viewerImpl = viewer.impl;
       const vpVec = viewerImpl.clientToViewport(
         event.originalEvent.canvasX,
@@ -160,7 +197,7 @@ const Issues = () => {
       console.log(test?.point);
       if (test?.point) {
         // point must be within model. aka !undefined
-        console.log('creating new issue!');
+        // console.log('creating new issue!');
         const newElement = {
           id: test.point.x,
           title: 'test issue',
@@ -170,18 +207,14 @@ const Issues = () => {
             z: test.point.z,
           },
         };
-        console.log('adding... ');
-        console.log(newElement);
-        setIssuesList((issuesList) => [...issuesList, newElement]);
-        // console.log(issuesList);
+        // console.log('adding... ');
+        // console.log(newElement);
+        setNewCreatedElement(newElement);
       }
-      // const newViewableData = await generateViewableData();
-      // console.log(newViewableData);
-      // await dataVizExt.addViewables(newViewableData);
     };
 
     const onItemHover = (event) => {
-      const itemData = dataVizExt.viewableData.viewables.find((v) => v.dbId == event.dbId);
+      const itemData = dataVizExt?.viewableData?.viewables.find((v) => v.dbId == event.dbId);
       if (itemData) {
         const position = itemData.position;
         const mappedPosition = viewer.impl.worldToClient(position);
@@ -203,35 +236,60 @@ const Issues = () => {
     viewer.addEventListener(DATAVIZEXTN.MOUSE_CLICK_OUT, onItemClickOut);
     viewer.addEventListener(DATAVIZEXTN.MOUSE_HOVERING, onItemHover);
 
-    await dataVizExt.addViewables(viewableData);
+    if (issuesVisible) {
+      await dataVizExt.addViewables(viewableData);
+    }
+
     document.getElementsByClassName('show-hide-issues-button')[0].onclick = issuesVisibilityHandler;
     document.getElementsByClassName('create-new-issue-button')[0].onclick = createIssueHandler;
   };
 
   useEffect(() => {
-    console.log(issuesList);
+    // console.log(issuesList);
     const testFun = async () => {
       const result = await generateViewableData();
-      dataVizExt.addViewables(result);
+      if (issuesVisible) {
+        dataVizExt.addViewables(result);
+      }
+      if (dataVizExt) {
+        dataVizExt.showHideViewables(issuesVisible);
+      }
       // console.log(result);
     };
     if (dataVizExt) {
       testFun();
     }
-  }, [issuesList]);
+  }, [issuesList, issuesVisible]);
+
+  // useEffect(() => {
+  //   console.log(issuesList);
+  //   if (dataVizExt) {
+  //     dataVizExt.showHideViewables(issuesVisible);
+  //   }
+  // }, [dataVizExt, issuesVisible]);
+
+  // useEffect(() => {
+  //   console.log(createIssueBool);
+  //   if (dataVizExt) {
+  //     dataVizExt.showHideViewables(true);
+  //   }
+  // }, [createIssueBool]);
 
   useEffect(() => {
-    if (dataVizExt) {
-      dataVizExt.showHideViewables(issuesVisible);
-    }
-  }, [dataVizExt, issuesVisible]);
+    console.log(newCreatedElement);
+    if (createIssueBool) {
+      console.log('creating new!');
+      // need to figure out how to only create one element
 
-  useEffect(() => {
-    console.log(createIssueBool);
-    if (dataVizExt) {
-      dataVizExt.showHideViewables(true);
+      // can delete the last one?
+      setTempNewCreatedElement(newCreatedElement);
+      setIssuesList((issuesList) => [...issuesList, newCreatedElement]);
+      createIssueHandler();
+    } else {
+      // setNewCreatedElement({}); // this breaks the browser!!
+      console.log('creating new is off. or there is alread');
     }
-  }, [createIssueBool]);
+  }, [newCreatedElement]);
 
   return (
     <IssuesContext.Provider value={issuesValue}>
@@ -259,9 +317,10 @@ const Issues = () => {
               </TabPanel>
             </Grid>
             <Grid item sm={5} lg={3}>
-              <CreateIssueForm />
+              <CreateIssueForm newCreatedElement={tempNewCreatedElement} />
             </Grid>
           </Grid>
+          {createIssueBool && <div>Creating a new issue!</div>}
         </Container>
       </Grow>
     </IssuesContext.Provider>

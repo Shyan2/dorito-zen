@@ -20,7 +20,7 @@ const HtmlTooltip = withStyles(() => ({
 
 const CustomToolTip = (props) => {
   if (props.hoveredDeviceInfo.id) {
-    console.log('entered!', props);
+    // console.log('entered!', props);
     return (
       <HtmlTooltip
         title={props.hoveredDeviceInfo.title}

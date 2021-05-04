@@ -11,6 +11,9 @@ import IconButton from '@material-ui/core/IconButton';
 
 import MenuDrawer from './MenuDrawer';
 
+import axios from 'axios';
+const SERVER_URL = process.env.REACT_APP_API_ROUTE;
+
 const Navbar = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -19,6 +22,9 @@ const Navbar = () => {
 
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
+
+  const [googleUser, setGoogleUser] = useState(null);
+  const [loginLink, setLoginLink] = useState(null);
 
   const logout = () => {
     dispatch({ type: 'LOGOUT' });
@@ -42,6 +48,47 @@ const Navbar = () => {
     setUser(JSON.parse(localStorage.getItem('profile')));
   }, [location]);
 
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const result = await axios.get(`${SERVER_URL}/api/google/profile`, {
+          withCredentials: true,
+        });
+        console.log(result.data);
+        if (result?.data?.code !== 401) {
+          setGoogleUser(result.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getProfile();
+    fetchLogin();
+  }, []);
+
+  const signOut = async () => {
+    setGoogleUser(null);
+    try {
+      const result = await axios.get(`${SERVER_URL}/api/google/logout`, {
+        withCredentials: true,
+      });
+
+      console.log(result.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchLogin = async () => {
+    try {
+      const result = await axios.get(`${SERVER_URL}/api/google/oauth/url`);
+      console.log(result);
+      setLoginLink(result.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className={classes.root}>
       <AppBar className={classes.appBar}>
@@ -60,13 +107,13 @@ const Navbar = () => {
           </Typography>
         </Toolbar>
         <Toolbar className={classes.toolbar}>
-          {user ? (
+          {googleUser ? (
             <div className={classes.profile}>
-              <Avatar alt={user.result.name} src={user.result.imageUrl}>
-                {user.result.name.charAt(0)}
+              <Avatar alt={googleUser.fullName} src={googleUser.picture}>
+                {googleUser?.fullName?.charAt(0)}
               </Avatar>
               <Typography className={classes.userName} variant='h6'>
-                {user.result.name}
+                {googleUser.fullName}
                 &nbsp;
               </Typography>
 
@@ -74,13 +121,14 @@ const Navbar = () => {
                 variant='contained'
                 className={classes.logout}
                 color='secondary'
-                onClick={logout}
+                onClick={signOut}
               >
                 Logout
               </Button>
             </div>
           ) : (
-            <Button component={Link} to='/auth'>
+            // <Button component={Link} to='/auth'>
+            <Button href={loginLink}>
               <Typography variant='h6' className={classes.heading}>
                 Sign in
               </Typography>

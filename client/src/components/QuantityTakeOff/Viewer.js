@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import QuantityExtension from './Extensions/QuantityExtension';
+import axios from 'axios';
+const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const AV = Autodesk.Viewing;
 
@@ -10,13 +12,22 @@ const Viewer = (props) => {
     'dXJuOmFkc2sud2lwcHJvZDpmcy5maWxlOnZmLkxvdXhtNzk0U3dDWGhrcXB1MEZKRVE_dmVyc2lvbj0xMTE'
   );
 
+  const [tempToken, setTempToken] = useState(null);
+
   useEffect(() => {
     if (props?.urn) {
       setUrn(props.urn);
     }
-  }, []);
 
+    const getNewToken = async () => {
+      const newToken = await axios.get(`${SERVER_URL}/api/forge/getToken`);
+      console.log(newToken.data.access_token);
+      setTempToken(newToken.data.access_token);
+    };
+    getNewToken();
+  }, []);
   const token = useSelector((state) => state?.forge?.forgeToken);
+  console.log(token);
 
   const viewerRef = useRef(null);
   const viewerDomRef = useRef(null);
@@ -34,8 +45,8 @@ const Viewer = (props) => {
   // const initializeViewer = async (urn, token) => {
   const initializeViewer = () => {
     const viewerOptions = {
-      // accessToken: token.data.access_token,
-      accessToken: token?.access_token,
+      // accessToken: token?.access_token,
+      accessToken: tempToken,
       env: 'MD20ProdUS',
       api: 'D3S',
     };
@@ -93,7 +104,7 @@ const Viewer = (props) => {
         viewerRef.current.finish();
       }
     };
-  }, []);
+  }, [tempToken]);
 
   return (
     <>

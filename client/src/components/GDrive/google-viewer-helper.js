@@ -8,7 +8,8 @@ const initializeViewer = async (urn, token) => {
   // const token = props.auth.access_token;
 
   const viewerOptions = {
-    accessToken: token?.access_token,
+    // accessToken: token?.access_token,
+    accessToken: token,
     env: 'MD20ProdUS',
     api: 'D3S',
   };

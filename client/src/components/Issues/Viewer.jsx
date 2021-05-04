@@ -1,6 +1,8 @@
 /* global Autodesk */
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 // import QuantityExtension from './Extensions/QuantityExtension';
 
 const AV = Autodesk.Viewing;
@@ -11,11 +13,18 @@ const Viewer = (props) => {
     'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6d3NwLW1haW4tb2ZmaWNlLyVFNSU4RiVCMCVFNSU4QyU5NyVFOCVCQiU4QSVFNyVBQiU5OSVFOCVCRSVBOCVFNSU4NSVBQyVFNSVBRSVBNC5ydnQ=' //main station
     // 'dXJuOmFkc2sud2lwcHJvZDpmcy5maWxlOnZmLkxvdXhtNzk0U3dDWGhrcXB1MEZKRVE_dmVyc2lvbj0xMTE' // huanan 111
   );
-
+  const [tempToken, setTempToken] = useState(null);
   useEffect(() => {
     if (props?.urn) {
       setUrn(props.urn);
     }
+
+    const getNewToken = async () => {
+      const newToken = await axios.get(`${SERVER_URL}/api/forge/getToken`);
+      console.log(newToken.data.access_token);
+      setTempToken(newToken.data.access_token);
+    };
+    getNewToken();
   }, []);
 
   const token = useSelector((state) => state?.forge?.forgeToken);
@@ -37,7 +46,7 @@ const Viewer = (props) => {
   const initializeViewer = () => {
     const viewerOptions = {
       // accessToken: token.data.access_token,
-      accessToken: token?.access_token,
+      accessToken: tempToken,
       env: 'MD20ProdUS',
       api: 'D3S',
     };
@@ -75,7 +84,7 @@ const Viewer = (props) => {
       });
 
       // since ghosting is heavy, turn off
-      viewer.prefs.set('ghosting', false);
+      viewer?.prefs?.set('ghosting', false);
       // viewer.prefs.set('ghosting', true);
     };
 
@@ -96,7 +105,7 @@ const Viewer = (props) => {
         viewerRef.current.finish();
       }
     };
-  }, []);
+  }, [tempToken]);
 
   return (
     <>

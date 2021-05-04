@@ -70,8 +70,9 @@ export const getUserProfile = async (req, res) => {
     const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
 
     const userinfo = await oauth2.userinfo.get();
-
+    console.log(userinfo);
     const returnObject = {
+      googleId: userinfo.data.id,
       fullName: userinfo.data.name,
       firstName: userinfo.data.given_name,
       lastName: userinfo.data.family_name,

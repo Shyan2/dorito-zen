@@ -4,6 +4,7 @@ import { IssuesContext } from './Context';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 120 },
+  { field: 'creator', headerName: 'Creator', width: 150 },
   { field: 'title', headerName: 'Title', width: 150 },
   {
     field: 'assignedTo',
@@ -37,6 +38,7 @@ const IssueGrid = () => {
           selectedFile: issue?.selectedFile,
           description: issue?.description,
           comments: issue?.comments?.length,
+          creator: issue?.creator,
         });
       });
     }

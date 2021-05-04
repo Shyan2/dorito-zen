@@ -18,6 +18,7 @@ import { IssuesContext } from './Context';
 
 // import issuesList from './issuesList';
 import defaultSVG from '../../assets/icons/circle.svg';
+const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const SpriteSize = 32;
 
@@ -90,10 +91,12 @@ const Issues = () => {
   }, []);
 
   const getIssues = async () => {
-    const issueResult = await axios.get('http://localhost:9001/issues');
+    const issueResult = await axios.get(`${SERVER_URL}/issues`);
+    console.log(issueResult);
     // console.log(issueResult.data);
     issueResult.data.map((issue) => {
       const temp = {
+        creator: issue.googleUser,
         _id: issue._id,
         id: issue.id,
         title: issue.title,
@@ -160,6 +163,8 @@ const Issues = () => {
     });
 
     const DATAVIZEXTN = Autodesk.DataVisualization.Core;
+    console.log(dataVizExt);
+    console.log(DATAVIZEXTN);
     // END LOAD EXTENSIONS
 
     // LOAD SPRITES(ISSUES)
@@ -236,9 +241,9 @@ const Issues = () => {
     viewer.addEventListener(DATAVIZEXTN.MOUSE_CLICK_OUT, onItemClickOut);
     viewer.addEventListener(DATAVIZEXTN.MOUSE_HOVERING, onItemHover);
 
-    if (issuesVisible) {
-      await dataVizExt.addViewables(viewableData);
-    }
+    // if (issuesVisible) {
+    //   await dataVizExt.addViewables(viewableData);
+    // }
 
     document.getElementsByClassName('show-hide-issues-button')[0].onclick = issuesVisibilityHandler;
     document.getElementsByClassName('create-new-issue-button')[0].onclick = createIssueHandler;

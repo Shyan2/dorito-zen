@@ -8,8 +8,8 @@ const initializeViewer = async (urn, token) => {
   //use 'https://bimwip.herokuapp.com
   console.log(token);
   const viewerOptions = {
-    // accessToken: token.data.access_token,
-    accessToken: token?.access_token,
+    accessToken: token,
+    // accessToken: token?.access_token,
     env: 'MD20ProdUS',
     api: 'D3S',
   };

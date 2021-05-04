@@ -8,11 +8,12 @@ import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import axios from 'axios';
+const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const CreateIssueForm = ({ newCreatedElement }) => {
-  // console.log('updating create issue form');
-  // console.log(newCreatedElement);
   const classes = useStyles();
+
+  const [googleUser, setGoogleUser] = useState(null);
   const [issueData, setIssueData] = useState({
     id: '',
     title: '',
@@ -23,7 +24,20 @@ const CreateIssueForm = ({ newCreatedElement }) => {
     ypos: '',
     zpos: '',
   });
-
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const result = await axios.get(`${SERVER_URL}/api/google/profile`, {
+          withCredentials: true,
+        });
+        console.log(result.data);
+        setGoogleUser(result?.data?.googleId);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getProfile();
+  }, []);
   useEffect(() => {
     if (newCreatedElement !== {}) {
       setIssueData({
@@ -55,9 +69,10 @@ const CreateIssueForm = ({ newCreatedElement }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(issueData);
+    console.log(googleUser);
     // send to mongodb
     // need to add a createdBy
-    const result = await axios.post('http://localhost:9001/issues', issueData);
+    const result = await axios.post('http://localhost:9001/issues', { ...issueData, googleUser });
     console.log(result);
     clear();
   };

@@ -5,7 +5,12 @@ const issueSchema = mongoose.Schema({
   project: String,
   title: String,
   description: String,
-  creator: String,
+  // creator: {
+  //   creatorId: String,
+  //   creatorName: String,
+  // },
+  creatorId: String,
+  creatorName: String,
   comments: [String],
   selectedFile: String,
   assignedTo: String,

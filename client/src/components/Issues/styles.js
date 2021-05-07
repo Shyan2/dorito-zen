@@ -22,4 +22,12 @@ export default makeStyles((theme) => ({
     marginBottom: 10,
   },
   select: {},
+  alert: {
+    width: 'calc(100vw - 56px)',
+    // '& > * + *': {
+    //   marginTop: '100px',
+    // },
+    position: 'fixed',
+    zIndex: 2,
+  },
 }));

@@ -83,7 +83,7 @@ const Viewer = (props) => {
       });
 
       // since ghosting is heavy, turn off
-      viewer.prefs.set('ghosting', false);
+      viewer?.prefs?.set('ghosting', false);
       // viewer.prefs.set('ghosting', true);
     };
 

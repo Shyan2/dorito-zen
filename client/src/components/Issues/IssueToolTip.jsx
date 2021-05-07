@@ -32,7 +32,7 @@ const CustomToolTip = (props) => {
           id='tooltip'
           style={{
             position: 'absolute',
-            left: `${props.hoveredDeviceInfo.xcoord + 80}px`,
+            left: `${props.hoveredDeviceInfo.xcoord + 57}px`,
             top: `${props.hoveredDeviceInfo.ycoord + 5}px`,
             zIndex: 2,
           }}

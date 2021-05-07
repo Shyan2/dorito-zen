@@ -3,9 +3,10 @@ import { DataGrid } from '@material-ui/data-grid';
 import { IssuesContext } from './Context';
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 120 },
-  { field: 'creator', headerName: 'Creator', width: 150 },
+  { field: 'id', headerName: 'ID', width: 120, hide: true },
   { field: 'title', headerName: 'Title', width: 150 },
+  { field: 'creator', headerName: 'Creator', width: 150 },
+
   {
     field: 'assignedTo',
     headerName: 'Assigned to',
@@ -38,15 +39,15 @@ const IssueGrid = () => {
           selectedFile: issue?.selectedFile,
           description: issue?.description,
           comments: issue?.comments?.length,
-          creator: issue?.creator,
+          creator: issue?.creatorName,
         });
       });
     }
     setRows(newRows);
   }, [issuesList]);
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <DataGrid rows={rows} columns={columns} pageSize={5} />
+    <div style={{ height: '70vh', width: '100%' }}>
+      <DataGrid rows={rows} columns={columns} autoPageSize />
     </div>
   );
 };

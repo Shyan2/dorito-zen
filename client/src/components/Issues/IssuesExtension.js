@@ -28,7 +28,7 @@ class IssuesExtensionToolbar extends Autodesk.Viewing.Extension {
 
     // SubToolbar
     this.subToolbar = new Autodesk.Viewing.UI.ControlGroup('viewer-issues-toolbar');
-    this.subToolbar.addControl(button1);
+    // this.subToolbar.addControl(button1);
     this.subToolbar.addControl(button2);
 
     toolbar.addControl(this.subToolbar);

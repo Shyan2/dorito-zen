@@ -45,6 +45,7 @@ export const getUserProfile = async (req, res) => {
     const internalToken = await oauth.getInternalToken();
     const user = new UserProfileApi();
     const profile = await user.getUserProfile(oauth.getClient(), internalToken);
+    console.log(profile);
     res.json({
       name: profile.body.firstName + ' ' + profile.body.lastName,
       picture: profile.body.profileImages.sizeX40,

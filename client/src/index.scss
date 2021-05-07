@@ -33,7 +33,7 @@ body {
 
 #issueViewer {
   width: 100%;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 48px);
   position: relative;
   padding: 0 !important;
 }
@@ -87,4 +87,8 @@ body {
 .create-new-issue-button {
   background-image: url('./assets/icons/play_button.svg');
   background-size: contain;
+}
+
+.adsk-viewing-viewer {
+  background: none !important;
 }

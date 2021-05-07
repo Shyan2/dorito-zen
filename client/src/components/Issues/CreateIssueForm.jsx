@@ -31,7 +31,7 @@ const CreateIssueForm = ({ newCreatedElement }) => {
           withCredentials: true,
         });
         console.log(result.data);
-        setGoogleUser(result?.data?.googleId);
+        setGoogleUser(result?.data);
       } catch (err) {
         console.log(err);
       }
@@ -72,7 +72,11 @@ const CreateIssueForm = ({ newCreatedElement }) => {
     console.log(googleUser);
     // send to mongodb
     // need to add a createdBy
-    const result = await axios.post('http://localhost:9001/issues', { ...issueData, googleUser });
+    const result = await axios.post('http://localhost:9001/issues', {
+      ...issueData,
+      creatorId: googleUser.googleId,
+      creatorName: googleUser.fullName,
+    });
     console.log(result);
     clear();
   };
@@ -86,14 +90,14 @@ const CreateIssueForm = ({ newCreatedElement }) => {
         onSubmit={handleSubmit}
       >
         <Typography variant='h6'>Create a new Issue</Typography>
-        <TextField
+        {/* <TextField
           name='id'
           variant='outlined'
           label='ID'
           fullWidth
           value={issueData.id}
           onChange={(e) => setIssueData({ ...issueData, id: e.target.value })}
-        />
+        /> */}
         <TextField
           name='title'
           variant='outlined'

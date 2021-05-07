@@ -1,23 +1,32 @@
 /*global Autodesk, THREE*/
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import useStyles from './styles';
 import { Container, Grid, Grow, Button } from '@material-ui/core';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
+import Collapse from '@material-ui/core/Collapse';
+import Loader from '../Utils/Loader';
+import wspLogoPng from '../../assets/images/Asset 16.png';
 
 import axios from 'axios';
 
 import CreateIssueForm from './CreateIssueForm';
 import IssueGrid from './IssueGrid';
 import IssuesExtensionToolbar from './IssuesExtension';
+import IssuesInfo from './IssuesInfo';
 import Viewer from './Viewer';
 import TabPanel from './TabPanel';
 import IssueToolTip from './IssueToolTip';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 
 import { IssuesContext } from './Context';
 
 // import issuesList from './issuesList';
 import defaultSVG from '../../assets/icons/circle.svg';
+import { classnames } from '@material-ui/data-grid';
 const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const SpriteSize = 32;
@@ -35,42 +44,25 @@ Autodesk.Viewing.theExtensionManager.registerExtension(
 );
 
 const Issues = () => {
-  const [issuesList, setIssuesList] = useState([
-    {
-      _id: '123123123',
-      id: '1',
-      title: 'issue 1',
-      description: 'test iussue 1 desctription',
-      assignedTo: 'FROM REACT',
-      position: {
-        x: -15.0,
-        y: -19.0,
-        z: 2,
-      },
-    },
-    {
-      _id: '198971832',
-      id: '2',
-      title: 'issue 2',
-      description: 'test description for issue 2',
-      assignedTo: 'FROM REACT',
-      position: {
-        x: -33.0,
-        y: -32.0,
-        z: 2,
-      },
-    },
-  ]);
+  const classes = useStyles();
+  const [issuesList, setIssuesList] = useState([]);
   const [issues, setIssues] = useState(null);
   const [tabValue, setTabValue] = useState(0);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [dataVizExt, setDataVizExt] = useState(null);
   const [issuesVisible, setIssuesVisible] = useState(false);
+  const [toolbarVisible, setToolbarVisible] = useState(false);
   const [createIssueBool, setCreateIssueBool] = useState(false);
   const [hoveredDeviceInfo, setHoveredDeviceInfo] = useState({});
 
   const [newCreatedElement, setNewCreatedElement] = useState({});
   const [tempNewCreatedElement, setTempNewCreatedElement] = useState({});
+
+  const [alertOpen, setAlertOpen] = useState(false);
+
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
   const dataVizExtRef = useRef(null);
   dataVizExtRef.current = dataVizExt;
@@ -83,6 +75,10 @@ const Issues = () => {
     setCreateIssueBool((prevCreateIssueBool) => !prevCreateIssueBool);
   };
 
+  const toolbarVisibilityHandler = () => {
+    setToolbarVisible((prevToolbarVisible) => !prevToolbarVisible);
+  };
+
   const issuesValue = useMemo(() => ({ issuesList, setIssuesList }), [issuesList, setIssuesList]);
 
   // get issues
@@ -91,12 +87,15 @@ const Issues = () => {
   }, []);
 
   const getIssues = async () => {
+    setIsLoading(true);
     const issueResult = await axios.get(`${SERVER_URL}/issues`);
     console.log(issueResult);
     // console.log(issueResult.data);
+    let tempIssuesList = [];
     issueResult.data.map((issue) => {
       const temp = {
-        creator: issue.googleUser,
+        creatorId: issue.creatorId,
+        creatorName: issue.creatorName,
         _id: issue._id,
         id: issue.id,
         title: issue.title,
@@ -110,8 +109,11 @@ const Issues = () => {
           z: issue.zpos,
         },
       };
-      setIssuesList((issuesList) => [...issuesList, temp]);
+      tempIssuesList.push(temp);
+      // setIssuesList((issuesList) => [...issuesList, temp]);
     });
+    setIssuesList(tempIssuesList);
+    // setIsLoading(false);
   };
   const generateViewableData = async () => {
     // console.log(issuesList);
@@ -144,6 +146,7 @@ const Issues = () => {
         viewable.assignedTo = issue.assignedTo;
         viewable.selectedFile = issue.selectedFile;
         viewable.comments = issue.comments;
+        viewable.creator = issue.creatorName;
         viewableData.addViewable(viewable);
       }
     });
@@ -151,11 +154,14 @@ const Issues = () => {
     return viewableData;
   };
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
-
   const onModelLoaded = async (viewer, data) => {
+    // TEST
+    // viewer.impl.renderer().setClearAlpha(0);
+    // viewer.impl.glrenderer().setClearColor(0xffffff, 0);
+    // viewer.impl.invalidate(true);
+    // END TEST
+    // setIsLoading(true);
+
     // LOAD EXTENSIONS
     await viewer.loadExtension('IssuesExtensionToolbar');
     const dataVizExt = await viewer.loadExtension('Autodesk.DataVisualization', {
@@ -163,8 +169,6 @@ const Issues = () => {
     });
 
     const DATAVIZEXTN = Autodesk.DataVisualization.Core;
-    console.log(dataVizExt);
-    console.log(DATAVIZEXTN);
     // END LOAD EXTENSIONS
 
     // LOAD SPRITES(ISSUES)
@@ -187,12 +191,16 @@ const Issues = () => {
       const itemData = dataVizExt?.viewableData?.viewables.find((v) => v.dbId == event.dbId);
       if (itemData) {
         console.log(itemData);
+        setSelectedIssue(itemData);
+      } else {
+        setSelectedIssue(null);
       }
     };
 
     const onItemClickOut = (event) => {
       // console.log('Clicked out! Creating a new issue pin.');
       // setNewCreatedElement({});
+      setSelectedIssue(null);
       let viewerImpl = viewer.impl;
       const vpVec = viewerImpl.clientToViewport(
         event.originalEvent.canvasX,
@@ -204,6 +212,7 @@ const Issues = () => {
         // point must be within model. aka !undefined
         // console.log('creating new issue!');
         const newElement = {
+          _id: test.point.x,
           id: test.point.x,
           title: 'test issue',
           position: {
@@ -245,8 +254,10 @@ const Issues = () => {
     //   await dataVizExt.addViewables(viewableData);
     // }
 
-    document.getElementsByClassName('show-hide-issues-button')[0].onclick = issuesVisibilityHandler;
-    document.getElementsByClassName('create-new-issue-button')[0].onclick = createIssueHandler;
+    // document.getElementsByClassName('show-hide-issues-button')[0].onclick = issuesVisibilityHandler;
+    // document.getElementsByClassName('create-new-issue-button')[0].onclick = createIssueHandler;
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -289,43 +300,117 @@ const Issues = () => {
       // can delete the last one?
       setTempNewCreatedElement(newCreatedElement);
       setIssuesList((issuesList) => [...issuesList, newCreatedElement]);
-      createIssueHandler();
+      // createIssueHandler();
     } else {
       // setNewCreatedElement({}); // this breaks the browser!!
-      console.log('creating new is off. or there is alread');
+      console.log('creating new is off.');
     }
   }, [newCreatedElement]);
+
+  //TEST
+  useEffect(() => {
+    console.log(selectedIssue);
+  }, [selectedIssue]);
+  // END TEST
+
+  // Checks if user is logged in when pressing on Create Issue
+  const createIssueBtn = async () => {
+    try {
+      const result = await axios.get(`${SERVER_URL}/api/google/profile`, {
+        withCredentials: true,
+      });
+      console.log(result.data);
+      if (result?.data?.code === 401) {
+        setAlertOpen(true);
+        console.log('user does not exist');
+      } else {
+        createIssueHandler();
+      }
+    } catch (error) {
+      console.log(error);
+      setAlertOpen(true);
+    }
+  };
 
   return (
     <IssuesContext.Provider value={issuesValue}>
       <Grow in>
-        <Container maxWidth={false}>
-          <Grid container>
-            <Grid item sm={12} lg={9}>
-              <Tabs
-                value={tabValue}
-                indicatorColor='secondary'
-                textColor='secondary'
-                onChange={handleTabChange}
-                aria-label='tabs'
-                variant='fullWidth'
+        <Container maxWidth={false} disableGutters>
+          <div className={classes.alert}>
+            <Collapse in={alertOpen}>
+              <Alert
+                severity='error'
+                action={
+                  <IconButton
+                    aria-label='close'
+                    color='inherit'
+                    size='small'
+                    onClick={() => {
+                      setAlertOpen(false);
+                    }}
+                  >
+                    <CloseIcon fontSize='inherit' />
+                  </IconButton>
+                }
               >
-                <Tab label='Main' />
-                <Tab label='Table' />
-              </Tabs>
-              <TabPanel value={tabValue} index={0}>
-                <IssueToolTip hoveredDeviceInfo={hoveredDeviceInfo} />
-                <Viewer onModelLoaded={onModelLoaded} />
-              </TabPanel>
-              <TabPanel value={tabValue} index={1}>
-                <IssueGrid />
-              </TabPanel>
+                You must be logged in to create an issue.
+              </Alert>
+            </Collapse>
+          </div>
+          <Grid container style={{ paddingRight: 10 }}>
+            <Grid item sm={12} lg={9}>
+              <IssueToolTip hoveredDeviceInfo={hoveredDeviceInfo} />
+              <Viewer onModelLoaded={onModelLoaded} />
+              <img
+                className='logo'
+                src={wspLogoPng}
+                style={{
+                  width: '5%',
+                  bottom: '12px',
+                  position: 'absolute',
+                  zIndex: 2,
+                  left: '75px',
+                  opacity: 0.7,
+                }}
+              ></img>
             </Grid>
             <Grid item sm={5} lg={3}>
-              <CreateIssueForm newCreatedElement={tempNewCreatedElement} />
+              <Button onClick={() => issuesVisibilityHandler()}>
+                {issuesVisible ? 'Hide' : 'Show'} Issues
+              </Button>
+              <Button onClick={() => toolbarVisibilityHandler()}>
+                {toolbarVisible ? 'Hide' : 'Show'} Toolbar
+              </Button>
+              {!isLoading ? (
+                createIssueBool ? (
+                  <div>
+                    <Button
+                      onClick={() => {
+                        createIssueHandler();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <CreateIssueForm newCreatedElement={tempNewCreatedElement} />
+                  </div>
+                ) : (
+                  <div>
+                    <Button
+                      onClick={() => {
+                        !issuesVisible && issuesVisibilityHandler();
+                        createIssueBtn();
+                      }}
+                    >
+                      Create issue
+                    </Button>
+                    {selectedIssue ? <IssuesInfo selectedIssue={selectedIssue} /> : <IssueGrid />}
+                  </div>
+                )
+              ) : (
+                <Loader />
+              )}
             </Grid>
           </Grid>
-          {createIssueBool && <div>Creating a new issue!</div>}
         </Container>
       </Grow>
     </IssuesContext.Provider>

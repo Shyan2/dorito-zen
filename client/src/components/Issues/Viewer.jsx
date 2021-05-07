@@ -52,8 +52,10 @@ const Viewer = (props) => {
     };
 
     AV.Initializer(viewerOptions, async () => {
-      const viewer = new Autodesk.Viewing.GuiViewer3D(viewerDomRef.current);
-      // const viewer = new Autodesk.Viewing.Viewer3D(viewerDomRef.current); //headless view
+      Autodesk.Viewing.Private.InitParametersSetting.alpha = true;
+      // const viewer = new Autodesk.Viewing.GuiViewer3D(viewerDomRef.current);
+      const viewer = new Autodesk.Viewing.Viewer3D(viewerDomRef.current); //headless view
+
       viewerRef.current = viewer;
 
       const startedCode = viewer.start(undefined, undefined, undefined, undefined, viewerOptions);
@@ -75,6 +77,9 @@ const Viewer = (props) => {
   };
 
   const loadModel = (viewer, documentId) => {
+    viewer.impl.renderer().setClearAlpha(0);
+    viewer.impl.glrenderer().setClearColor(0xffffff, 0);
+    viewer.impl.invalidate(true);
     const onDocumentLoadSuccess = (viewerDocument) => {
       // viewerDocument is an instance of Autodesk.Viewing.Document
       // const defaultModel = viewerDocument.getRoot().getDefaultGeometry(true); // does not load links

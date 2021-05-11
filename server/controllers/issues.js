@@ -13,7 +13,7 @@ export const getIssues = async (req, res) => {
 
 export const createIssue = async (req, res) => {
   const issue = req.body;
-  console.log(issue);
+  // console.log(issue);
   const newIssue = new Issue({
     ...issue,
     // creator: req.userId,

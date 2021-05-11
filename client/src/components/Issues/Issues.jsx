@@ -256,7 +256,7 @@ const Issues = () => {
 
     // document.getElementsByClassName('show-hide-issues-button')[0].onclick = issuesVisibilityHandler;
     // document.getElementsByClassName('create-new-issue-button')[0].onclick = createIssueHandler;
-
+    setIssuesVisible(true);
     setIsLoading(false);
   };
 

@@ -16,9 +16,9 @@ var oauth2Client = new OAuth2(
 export const getGoogleUrl = async (req, res) => {
   var scopes = [
     /// TEST
-    'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/drive',
-    'https://www.googleapis.com/auth/drive.metadata',
+    // 'https://www.googleapis.com/auth/drive.file',
+    // 'https://www.googleapis.com/auth/drive',
+    // 'https://www.googleapis.com/auth/drive.metadata',
     // END TEST
     'https://www.googleapis.com/auth/drive.readonly',
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -40,9 +40,9 @@ export const googleCallbackRoute = async (req, res) => {
   oauth2Client.setCredentials(tokens);
 
   const oauth = new OAuth(req.session);
-  console.log(tokens);
+  // console.log(tokens);
   oauth.setGoogleToken(tokens.access_token);
-  res.redirect(`${FRONT_URL}/gdrive`); // /gdrive
+  res.redirect(`${FRONT_URL}`); // /gdrive
 };
 
 export const googleLogout = async (req, res) => {
@@ -70,7 +70,7 @@ export const getUserProfile = async (req, res) => {
     const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
 
     const userinfo = await oauth2.userinfo.get();
-    console.log(userinfo);
+    // console.log(userinfo);
     const returnObject = {
       googleId: userinfo.data.id,
       fullName: userinfo.data.name,
@@ -79,6 +79,7 @@ export const getUserProfile = async (req, res) => {
       email: userinfo.data.email,
       picture: userinfo.data.picture,
     };
+    console.log(returnObject);
     res.status(200).json(returnObject);
   } catch (error) {
     console.log(error);

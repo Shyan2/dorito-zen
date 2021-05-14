@@ -75,6 +75,9 @@ const ForgeAuth = () => {
 
   return (
     <Grid container className={classes.gridContainer} spacing={3}>
+      <Grid item xs={12}>
+        <Typography variant='h1'>Autodesk Login</Typography>
+      </Grid>
       {!isLoggedIn ? (
         <Grid item xs={12} sm={6} lg={4}>
           <Typography variant='h5' className={classes.typography} style={{ flex: 1 }} gutterBottom>

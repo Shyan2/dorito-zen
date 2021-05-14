@@ -1,12 +1,13 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Grow, Grid } from '@material-ui/core';
+import { Container, Grow, Grid, Typography } from '@material-ui/core';
 
 import { QuantityContext, UrnContext } from '../Context';
 
 import FileTree from './FileTree';
-import Viewer from '../Viewer/Viewer';
+import Viewer from '../Viewer';
 import QuantityTakeOff from '../QuantityTakeOff/QuantityTakeOff';
+import Issues from '../Issues/Issues';
 import usestyles from './styles';
 
 const Models = () => {
@@ -26,7 +27,7 @@ const Models = () => {
   };
 
   useEffect(() => {
-    scrollToTable();
+    // scrollToTable();
   }, [quantity]);
 
   const token = useSelector((state) => state?.forge?.forgeToken);
@@ -35,13 +36,16 @@ const Models = () => {
     <UrnContext.Provider value={urnValue}>
       <QuantityContext.Provider value={quantityValue}>
         <Grow in>
-          <Container maxWidth={false} className={classes.modelContainer}>
-            <Grid container className={classes.gridContainer} spacing={3}>
+          <Container maxWidth={false} className={classes.modelContainer} disableGutters>
+            <Grid container className={classes.gridContainer}>
               <Grid item xs={12} sm={12} md={4} lg={3}>
                 <FileTree />
               </Grid>
-              <Grid item xs={12} sm={12} md={8} lg={9}>
+              <Grid item xs={12} sm={12} md={8} lg={6}>
                 <Viewer />
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={3}>
+                <Issues />
               </Grid>
             </Grid>
             <Grid container>

@@ -65,6 +65,7 @@ const BIMTree = (props) => {
   const handleChange = (event, nodes) => {
     const expandingNodes = nodes.filter((x) => !expanded.includes(x));
     setExpanded(nodes);
+    console.log(nodes);
     if (expandingNodes[0]) {
       const childId = expandingNodes[0];
       fetchChildNodes(childId).then((result) => {

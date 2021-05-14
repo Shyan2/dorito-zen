@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import { Container, Grow, Grid } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { getToken } from '../../actions/forge';
+
 import MyServices from './MyServices/MyServices';
 import ForgeAuth from './ForgeAuth';
+import ProjectSelection from './ProjectSelection';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -32,6 +34,9 @@ const Home = () => {
       <Container>
         <Grid item>
           <ForgeAuth />
+        </Grid>
+        <Grid item>
+          <ProjectSelection />
         </Grid>
         <Grid item>
           <MyServices />

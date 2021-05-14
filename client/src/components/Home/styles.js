@@ -8,4 +8,11 @@ export default makeStyles((theme) => ({
   gridContainer: {
     padding: theme.spacing(3),
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 700,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
 }));

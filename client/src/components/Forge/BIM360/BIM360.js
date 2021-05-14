@@ -1,11 +1,12 @@
 /* global Autodesk */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import BIMTree from './BIMTree';
 
 import { Container, Grid, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import { ProjectIdContext } from '../../../Context';
 
 // const SERVER_URL = 'http://localhost:9001';
 // const SERVER_URL = 'https://bimwip.herokuapp.com';
@@ -27,6 +28,11 @@ const BIM360 = () => {
   const [loginLink, setLoginLink] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState();
+
+  const [linkRoute, setLinkRoute] = useState(null);
+  const [rootName, setRootName] = useState('Root');
+
+  const { projectId } = useContext(ProjectIdContext);
 
   useEffect(() => {
     const checkForUserProfile = async () => {
@@ -85,7 +91,19 @@ const BIM360 = () => {
     }
   };
 
-  const linkRoute = '#';
+  useEffect(() => {
+    console.log(projectId);
+    projectCheck();
+  }, [projectId]);
+
+  const projectCheck = () => {
+    if (projectId?.bim360Link?.length > 0) {
+      setLinkRoute(projectId.bim360Link);
+      setRootName(projectId.name);
+    }
+  };
+
+  // const linkRoute = '#';
   // 'https://developer.api.autodesk.com/project/v1/hubs/b.8a331102-468b-4ecd-a5c3-64c7b5c855ab'; // hub folder ('#')
 
   return (
@@ -149,7 +167,11 @@ const BIM360 = () => {
             </Button>
           </Grid>
           <Grid item sm={12}>
-            <BIMTree id={linkRoute} name='Root' />
+            {linkRoute ? (
+              <BIMTree id={linkRoute} name={rootName} />
+            ) : (
+              <Typography>No BIM360</Typography>
+            )}
           </Grid>
         </Grid>
       )}

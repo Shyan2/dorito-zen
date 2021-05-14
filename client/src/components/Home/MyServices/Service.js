@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 
 const Service = ({ item }) => {
   const classes = useStyles();
-  console.log(item);
   return (
     <Link to={item.path}>
       <Card className={classes.card}>

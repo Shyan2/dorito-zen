@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import useStyles from './styles';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { AppBar, Typography, Avatar, Button } from '@material-ui/core';
@@ -12,6 +12,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuDrawer from './MenuDrawer';
 
 import axios from 'axios';
+import { ProjectIdContext } from '../../Context';
 const SERVER_URL = process.env.REACT_APP_API_ROUTE;
 
 const Navbar = () => {
@@ -25,6 +26,8 @@ const Navbar = () => {
 
   const [googleUser, setGoogleUser] = useState(null);
   const [loginLink, setLoginLink] = useState(null);
+
+  const { projectId } = useContext(ProjectIdContext);
 
   const logout = () => {
     dispatch({ type: 'LOGOUT' });
@@ -104,6 +107,10 @@ const Navbar = () => {
           </IconButton>
           <Typography component={Link} to='/' className={classes.heading} variant='h5'>
             Project BIM
+          </Typography>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <Typography className={classes.heading} variant='h5'>
+            {projectId.id ? projectId.id + ' - ' + projectId.name : 'No Project selected'}
           </Typography>
         </Toolbar>
         <Toolbar className={classes.toolbar}>
